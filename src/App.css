@@ -1,10 +1,118 @@
-* {
- margin: 0;
- padding: 0;
- box-sizing: border-box;
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif; /* Используем шрифт Roboto */
 }
 
-body{
-  background: var(--tg-theme-bg-color);
-  color: var(--tg-theme-text-color);
+.App {
+  text-align: center;
+  padding: 20px;
+  background-color: #272822; /* Темный фон Monokai */
+  color: #f8f8f2; /* Цвет текста */
+}
+
+.app-title {
+  color: #66d9ef; /* Цвет заголовка */
+  margin-bottom: 20px;
+  font-size: 32px; /* Увеличиваем размер заголовка */
+}
+
+.balance-container {
+  display: flex;
+  flex-direction: column; /* Вертикальное выравнивание */
+  align-items: center; /* Центрируем содержимое */
+  margin-bottom: 20px; /* Отступ снизу */
+}
+
+.balance {
+  font-size: 32px; /* Увеличенный размер шрифта для баланса */
+}
+
+.eye-button {
+  background: none; /* Убираем фон */
+  border: none; /* Убираем границу */
+  cursor: pointer; /* Курсор в виде указателя */
+}
+
+.tab-container {
+  display: flex;
+  flex-wrap: wrap; /* Позволяет кнопкам переноситься на новую строку */
+  justify-content: center;
+}
+
+.tab-button {
+  background-color: #75715e; /* Цвет кнопок */
+  color: #f8f8f2; /* Цвет текста кнопок */
+  border: none; /* Убираем рамку */
+  padding: 10px 15px; /* Отступы внутри кнопки */
+  margin: 5px; /* Отступы между кнопками */
+  border-radius: 5px; /* Закругленные углы */
+  cursor: pointer; /* Курсор при наведении */
+  flex-grow: 1; /* Позволяет кнопкам занимать равное пространство */
+  
+  font-weight: 400; /* Устанавливаем вес шрифта на Regular (400) */
+}
+
+.tab-button.active {
+ background-color: #a59f8d; /* Цвет активной вкладки */
+}
+
+.action-button {
+ background-color: #66d9ef; /* Цвет кнопок действий */
+ color: #272822; /* Цвет текста на кнопках действий */
+ border: none;
+ padding: 10px 15px;
+ border-radius: 5px;
+ cursor: pointer;
+ margin-top: 10px;
+
+ font-weight: 400; /* Устанавливаем вес шрифта на Regular (400) для кнопок действий */
+}
+
+.content {
+ margin-top: 20px;
+}
+
+/* Стили для выбора валюты */
+.currency-selector {
+    margin-top: 10px;
+}
+
+.currency-selector button {
+    margin-right: 5px;
+}
+
+/* Медиа-запросы для мобильных устройств */
+@media (max-width:600px) {
+    .tab-button {
+        padding:10px; /* Уменьшаем отступы для мобильных устройств */
+        font-size:14px; /* Уменьшаем размер шрифта для мобильных устройств */
+        width:calc(50% -10px); /* Две кнопки в ряд с учетом отступов */
+    }
+
+    .action-button {
+        width:100%; /* Кнопки действий занимают всю ширину на мобильных устройствах */
+        font-size : 14px;/* Уменьшаем размер шрифта для мобильных устройств */ 
+    }
+
+    .app-title {
+        font-size : 24px ;/* Уменьшаем размер заголовка для мобильных устройств */ 
+    }
+
+    .balance {
+        font-size : 24px ;/* Уменьшаем размер шрифта для баланса на мобильных устройствах */ 
+    }
+}
+
+.balance-container {
+    display:flex ;
+    align-items:center ;
+}
+
+.eye-button {
+    margin-left : 10px ;/* Отступ между балансом и кнопкой */ 
+}
+
+.balance-description {
+    color : rgba(0,0,0,0.5);/* Полупрозрачный цвет текста */ 
+    font-size : 14px ;/* Размер шрифта */ 
 }
