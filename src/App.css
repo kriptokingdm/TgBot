@@ -1,128 +1,103 @@
 body {
-  margin: 0;
-  font-family: 'Roboto', sans-serif; /* Используем шрифт Roboto */
+  background-color: #272822; /* Темный фон */
+  color: #f8f8f2; /* Светлый текст */
+  font-family: 'Courier New', Courier, monospace; /* Моноширинный шрифт */
 }
 
-.App {
-  text-align: center;
-  padding: 20px;
-  background-color: #272822; /* Темный фон Monokai */
-  color: #f8f8f2; /* Цвет текста */
-}
-
-.app-title {
-  color: #66d9ef; /* Цвет заголовка */
-  margin-bottom: 20px;
-  font-size: 32px; /* Увеличиваем размер заголовка */
-}
-
-.balance-container {
+.home-container {
   display: flex;
-  flex-direction: column; /* Вертикальное выравнивание */
-  align-items: center; /* Центрируем содержимое */
-  margin-bottom: 20px; /* Отступ снизу */
+  justify-content: center; /* Центрирование по горизонтали */
+  align-items: center; /* Центрирование по вертикали */
+  height: 100vh; /* Занимает всю высоту экрана */
 }
 
-.balance {
-  font-size: 32px; /* Увеличенный размер шрифта для баланса */
+.info-box {
+  background-color: #1e1e1e; /* Темный фон для контейнера */
+  border-radius: 15px; /* Закругленные углы */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
+  padding: 20px; /* Отступы внутри контейнера */
+  width: 300px; /* Ширина контейнера */
 }
 
-.eye-button {
-  background: none; /* Убираем фон */
-  border: none; /* Убираем границу */
-  cursor: pointer; /* Курсор в виде указателя */
-}
-
-.tab-container {
+.labels {
   display: flex;
-  flex-wrap: wrap; /* Позволяет кнопкам переноситься на новую строку */
-  justify-content: center;
+  justify-content: space-between; /* Распределение элементов по краям */
+  align-items: center; /* Центрирование по вертикали */
 }
 
-.tab-button {
-  background-color: #75715e; /* Цвет кнопок */
-  color: #f8f8f2; /* Цвет текста кнопок */
-  border: none; /* Убираем рамку */
-  padding: 10px 15px; /* Отступы внутри кнопки */
-  margin: 5px; /* Отступы между кнопками */
-  border-radius: 5px; /* Закругленные углы */
-  cursor: pointer; /* Курсор при наведении */
-  flex-grow: 1; /* Позволяет кнопкам занимать равное пространство */
-  
-  font-weight: 400; /* Устанавливаем вес шрифта на Regular (400) */
+.currency-label {
+  text-align: center; /* Центрирование текста внутри меток валюты */
 }
 
-.tab-button.active {
- background-color: #a59f8d; /* Цвет активной вкладки */
+h2 {
+  color: #66d9ef; /* Цвет заголовков (светло-голубой) */
 }
 
-.action-button {
- background-color: #66d9ef; /* Цвет кнопок действий */
- color: #272822; /* Цвет текста на кнопках действий */
- border: none;
- padding: 10px 15px;
- border-radius: 5px;
- cursor: pointer;
- margin-top: 10px;
-
- font-weight: 400; /* Устанавливаем вес шрифта на Regular (400) для кнопок действий */
+h3 {
+  color: #a6e22e; /* Цвет подзаголовков (светло-зеленый) */
 }
 
-.content {
- margin-top: 20px;
+.arrow {
+  color: #f92672; /* Цвет стрелки (розовый) */
 }
 
-/* Стили для выбора валюты */
-.currency-selector {
-    margin-top: 10px;
+.input-container {
+  display: flex;
+  align-items: center; /* Центрирование по вертикали */
 }
 
-.currency-selector button {
-    margin-right: 5px;
+input[type="number"] {
+  width: 100%; /* Занимает всю ширину контейнера */
+  padding: 10px; /* Отступы внутри поля ввода */
+  border: 1px solid #75715e; /* Граница поля ввода (светло-коричневая) */
+  border-radius: 5px; /* Округленные углы */
+  background-color: #272822; /* Темный фон для поля ввода */
+  color: #f8f8f2; /* Светлый текст в поле ввода */
 }
 
-/* Медиа-запросы для мобильных устройств */
-@media (max-width:600px) {
-    .tab-button {
-        padding:10px; /* Уменьшаем отступы для мобильных устройств */
-        font-size:14px; /* Уменьшаем размер шрифта для мобильных устройств */
-        width:calc(50% -10px); /* Две кнопки в ряд с учетом отступов */
-    }
-
-    .action-button {
-        width:100%; /* Кнопки действий занимают всю ширину на мобильных устройствах */
-        font-size : 14px;/* Уменьшаем размер шрифта для мобильных устройств */ 
-    }
-
-    .app-title {
-        font-size : 24px ;/* Уменьшаем размер заголовка для мобильных устройств */ 
-    }
-
-    .balance {
-        font-size : 24px ;/* Уменьшаем размер шрифта для баланса на мобильных устройствах */ 
-    }
+input[type="number"]::placeholder {
+  color: #75715e; /* Цвет плейсхолдера (светло-коричневый) */
 }
 
-.balance-container {
-    display:flex ;
-    align-items:center ;
+span {
+  font-size: 18px; /* Размер шрифта для символа валюты */
+  margin-left: 10px; /* Отступ слева от поля ввода */
 }
 
-.eye-button {
-    margin-left : 10px ;/* Отступ между балансом и кнопкой */ 
+.conversion-result {
+  margin-top: 20px;
+  color: #66d9ef; /* Цвет результата конверсии (светло-голубой) */
 }
 
-.balance-description {
-    color : rgba(0,0,0,0.5);/* Полупрозрачный цвет текста */ 
-    font-size : 14px ;/* Размер шрифта */ 
+.input-result-container {
+  display: flex; /* Используем Flexbox для выравнивания */
+  align-items: center; /* Центрируем по вертикали */
 }
 
-body.light {
-  background-color: white;
-  color: black;
+.input-container {
+  display: flex; /* Используем Flexbox для поля ввода */
+  align-items: center; /* Центрируем по вертикали */
 }
 
-body.dark {
-  background-color: black;
-  color: white;
+
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
+
+.conversion-result {
+  margin-left: 20px; /* Отступ слева от результата конверсии */
+  flex-grow: 1; /* Позволяет этому элементу занимать оставшееся пространство */
+  text-align: center; /* Центрируем текст */
+  animation: fadeIn 0.5s ease-in; /* Применяем анимацию появления */
+}
+
+.conversion-result span {
+  font-size: 20px; /* Увеличиваем размер шрифта */
+  line-height: 1.5; /* Увеличиваем высоту строки */
 }

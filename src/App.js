@@ -1,103 +1,98 @@
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import axios from 'axios'; // Импортируем Axios
 import './App.css';
-import QuickExchange from './QuickExchange'; // Убедитесь, что путь правильный
-import Settings from './Settings'; // Импортируем новый компонент
+import QuickExchange from './QuickExchange'; // Импортируем компонент QuickExchange
+import Settings from './Settings'; // Импортируем компонент Settings
 
-const tg = window.Telegram.WebApp;
+function Home() {
+    const [isUsdtOnTop, setIsUsdtOnTop] = useState(true);
+    const [amount, setAmount] = useState(0);
+    const [exchangeRate, setExchangeRate] = useState(75); // Начальное значение курса
+    const apiKey = 'YOUR_API_KEY'; // Замените на ваш API-ключ
 
-function Home({ balance, toggleBalanceVisibility, isBalanceVisible, handleCurrencyChange }) {
-    const getDisplayedBalance = () => {
-        return isBalanceVisible ? `${balance} RUB` : '****'; // Здесь можно добавить логику для отображения валюты
+    useEffect(() => {
+        const fetchExchangeRate = async () => {
+            try {
+                const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/USD`); // Пример запроса к API
+                setExchangeRate(response.data.rates.RUB); // Устанавливаем курс RUB к USD
+            } catch (error) {
+                console.error("Ошибка при получении курса:", error);
+            }
+        };
+
+        fetchExchangeRate();
+    }, []);
+
+    const toggleCurrencies = () => {
+        setIsUsdtOnTop(!isUsdtOnTop);
+        setAmount(0); // Сбрасываем сумму при переключении валют
     };
 
-    return (
-        <div>
-            <div className="currency-selector">
-                <button onClick={() => handleCurrencyChange('RUB')}>RUB</button>
-                <button onClick={() => handleCurrencyChange('USD')}>USD</button>
-                <button onClick={() => handleCurrencyChange('EUR')}>EUR</button>
-            </div>
-            <div className="balance-display">
-                {getDisplayedBalance()}
-            </div>
-        </div>
-    );
-}
+    const handleAmountChange = (e) => {
+        setAmount(e.target.value);
+    };
 
-function MyOrders() {
+    // Обновленная логика конвертации
+    const convertedAmount = isUsdtOnTop ? amount * exchangeRate : amount / exchangeRate;
+
     return (
-        <div>
-            <h2>Мои ордера</h2>
-            <p>Здесь будет список ваших ордеров.</p>
+        <div className="home-container">
+            <div className="info-box">
+                <div className="labels">
+                    <div className="currency-label">
+                        <h2>Продаете</h2>
+                        <h3>{isUsdtOnTop ? 'USDT' : 'RUB'}</h3>
+                    </div>
+                    <div className="arrow" onClick={toggleCurrencies} style={{ cursor: 'pointer', fontSize: '24px' }}>
+                        🡺
+                    </div>
+                    <div className="currency-label">
+                        <h2>Покупаете</h2>
+                        <h3>{isUsdtOnTop ? 'RUB' : 'USDT'}</h3>
+                    </div>
+                </div>
+
+                {/* Сплошная линия */}
+                <hr style={{ margin: '20px 0', border: '1px solid #ccc' }} />
+
+                {/* Поле ввода суммы и результат конверсии в одной строке */}
+                <div className="input-result-container">
+                    <div className="input-container">
+                        <input 
+                            type="number" 
+                            placeholder={isUsdtOnTop ? "Сумма в $" : "Сумма в ₽"} 
+                            value={amount} 
+                            onChange={handleAmountChange} 
+                        />
+                        <span>{isUsdtOnTop ? "$" : "₽"}</span>
+                    </div>
+
+                    {/* Отображение конвертированной суммы с анимацией */}
+                    <div className="conversion-result">
+                        <span style={{ fontSize: '20px', lineHeight: '1.5' }}>
+                            {isUsdtOnTop 
+                                ? `Вы получите: ${convertedAmount.toFixed(2)} ₽` 
+                                : `Вы получите: ${convertedAmount.toFixed(2)} $`}
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
 
 function App() {
-    const [balance, setBalance] = useState(1000);
-    const [isBalanceVisible, setIsBalanceVisible] = useState(true);
-    const [currency, setCurrency] = useState('RUB');
-    const [theme, setTheme] = useState('light'); // Состояние для темы
-    const [timezone, setTimezone] = useState('UTC'); // Состояние для часового пояса
-
-    const toggleBalanceVisibility = () => {
-        setIsBalanceVisible(!isBalanceVisible);
-    };
-
-    const handleCurrencyChange = (newCurrency) => {
-        setCurrency(newCurrency);
-        // Здесь можно добавить логику для обновления баланса в зависимости от выбранной валюты
-    };
-
-    useEffect(() => {
-        tg.ready();
-        document.body.className = theme; // Устанавливаем класс на body для применения стилей
-    }, [theme]);
-
     return (
         <Router>
             <div className="App">
-                {/* Заголовок теперь выше */}
-                <h1 className="app-title">TetherRabbit🥕</h1>
-
-                {/* Баланс теперь под заголовком */}
-                <div className="balance-container">
-                    {isBalanceVisible ? `${balance} ${currency}` : '****'}
-                    {/* Кнопка теперь справа от баланса */}
-                    <button onClick={toggleBalanceVisibility} className="eye-button" aria-label="Toggle balance visibility">
-                        {isBalanceVisible ? '👁️' : '🙈'}
-                    </button>
-                </div>
-
-                {/* Убрали полупрозрачный текст под балансом */}
-                
-                {/* Убрали Home из основного контента */}
-                <div className="tab-container">
-                    {/* Изменили порядок кнопок */}
-                    <Link to="/quick-exchange" className="tab-button">Быстрый обмен</Link>
-                    <Link to="/my-orders" className="tab-button">Мои ордера</Link>
-                    <Link to="/settings" className="tab-button">Настройки</Link>
-                </div>
-
-                <div className="content">
-                    {/* Заменили Switch на Routes */}
-                    {/* Заменили Route с exact на просто Route */}
-                    <Routes>
-                        {/* Используем обновленный компонент Home */}
-                        <Route path="/" element={<Home balance={balance} toggleBalanceVisibility={toggleBalanceVisibility} isBalanceVisible={isBalanceVisible} handleCurrencyChange={handleCurrencyChange} />} />
-                        {/* Используем обновленный компонент QuickExchange */}
-                        <Route path="/quick-exchange" element={<QuickExchange />} />
-                        {/* Передаем пропсы в Settings */}
-                        <Route path="/settings" element={<Settings theme={theme} setTheme={setTheme} timezone={timezone} setTimezone={setTimezone} />} />
-                        {/* Используем обновленный компонент MyOrders */}
-                        <Route path="/my-orders" element={<MyOrders />} />
-                    </Routes>
-                </div>
-
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/quick-exchange" element={<QuickExchange />} />
+                    <Route path="/settings" element={<Settings />} />
+                </Routes>
             </div>
-
-        </Router >
+        </Router>
     );
 }
 
