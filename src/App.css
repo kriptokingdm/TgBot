@@ -116,3 +116,13 @@ body {
     color : rgba(0,0,0,0.5);/* Полупрозрачный цвет текста */ 
     font-size : 14px ;/* Размер шрифта */ 
 }
+
+body.light {
+  background-color: white;
+  color: black;
+}
+
+body.dark {
+  background-color: black;
+  color: white;
+}

@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import './App.css';
+import QuickExchange from './QuickExchange'; // Убедитесь, что путь правильный
+import Settings from './Settings'; // Импортируем новый компонент
 
 const tg = window.Telegram.WebApp;
 
 function Home({ balance, toggleBalanceVisibility, isBalanceVisible, handleCurrencyChange }) {
     const getDisplayedBalance = () => {
-        if (!isBalanceVisible) return '****';
-        return `${balance} RUB`; // Здесь можно добавить логику для отображения валюты
+        return isBalanceVisible ? `${balance} RUB` : '****'; // Здесь можно добавить логику для отображения валюты
     };
 
     return (
@@ -17,15 +18,9 @@ function Home({ balance, toggleBalanceVisibility, isBalanceVisible, handleCurren
                 <button onClick={() => handleCurrencyChange('USD')}>USD</button>
                 <button onClick={() => handleCurrencyChange('EUR')}>EUR</button>
             </div>
-        </div>
-    );
-}
-
-function QuickExchange() {
-    return (
-        <div>
-            <h2>Быстрый обмен</h2>
-            <p>Здесь будет форма для быстрого обмена.</p>
+            <div className="balance-display">
+                {getDisplayedBalance()}
+            </div>
         </div>
     );
 }
@@ -39,19 +34,12 @@ function MyOrders() {
     );
 }
 
-function Settings() {
-    return (
-        <div>
-            <h2>Настройки</h2>
-            <p>Здесь будут настройки вашего профиля.</p>
-        </div>
-    );
-}
-
 function App() {
     const [balance, setBalance] = useState(1000);
     const [isBalanceVisible, setIsBalanceVisible] = useState(true);
     const [currency, setCurrency] = useState('RUB');
+    const [theme, setTheme] = useState('light'); // Состояние для темы
+    const [timezone, setTimezone] = useState('UTC'); // Состояние для часового пояса
 
     const toggleBalanceVisibility = () => {
         setIsBalanceVisible(!isBalanceVisible);
@@ -59,11 +47,13 @@ function App() {
 
     const handleCurrencyChange = (newCurrency) => {
         setCurrency(newCurrency);
+        // Здесь можно добавить логику для обновления баланса в зависимости от выбранной валюты
     };
 
     useEffect(() => {
         tg.ready();
-    }, []);
+        document.body.className = theme; // Устанавливаем класс на body для применения стилей
+    }, [theme]);
 
     return (
         <Router>
@@ -92,16 +82,22 @@ function App() {
 
                 <div className="content">
                     {/* Заменили Switch на Routes */}
+                    {/* Заменили Route с exact на просто Route */}
                     <Routes>
-                        {/* Заменили Route с exact на просто Route */}
+                        {/* Используем обновленный компонент Home */}
                         <Route path="/" element={<Home balance={balance} toggleBalanceVisibility={toggleBalanceVisibility} isBalanceVisible={isBalanceVisible} handleCurrencyChange={handleCurrencyChange} />} />
+                        {/* Используем обновленный компонент QuickExchange */}
                         <Route path="/quick-exchange" element={<QuickExchange />} />
+                        {/* Передаем пропсы в Settings */}
+                        <Route path="/settings" element={<Settings theme={theme} setTheme={setTheme} timezone={timezone} setTimezone={setTimezone} />} />
+                        {/* Используем обновленный компонент MyOrders */}
                         <Route path="/my-orders" element={<MyOrders />} />
-                        <Route path="/settings" element={<Settings />} />
                     </Routes>
                 </div>
+
             </div>
-        </Router>
+
+        </Router >
     );
 }
 
