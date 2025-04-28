@@ -1,103 +1,216 @@
 body {
-  background-color: #272822; /* Темный фон */
-  color: #f8f8f2; /* Светлый текст */
-  font-family: 'Courier New', Courier, monospace; /* Моноширинный шрифт */
+  font-family: 'Nunito', Arial, sans-serif; /* Используем Nunito */
+  background-color: #1e1e1e;
+  color: white;
+  margin: 0;
+  padding: 20px;
 }
 
 .home-container {
-  display: flex;
-  justify-content: center; /* Центрирование по горизонтали */
-  align-items: center; /* Центрирование по вертикали */
-  height: 100vh; /* Занимает всю высоту экрана */
-}
-
-.info-box {
-  background-color: #1e1e1e; /* Темный фон для контейнера */
-  border-radius: 15px; /* Закругленные углы */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
-  padding: 20px; /* Отступы внутри контейнера */
-  width: 300px; /* Ширина контейнера */
-}
-
-.labels {
-  display: flex;
-  justify-content: space-between; /* Распределение элементов по краям */
-  align-items: center; /* Центрирование по вертикали */
-}
-
-.currency-label {
-  text-align: center; /* Центрирование текста внутри меток валюты */
-}
-
-h2 {
-  color: #66d9ef; /* Цвет заголовков (светло-голубой) */
+  max-width: 400px; 
+  margin: auto;
+  background-color: #2c2c2c;
+  border-radius: 10px;
+  padding: 20px;
 }
 
 h3 {
-  color: #a6e22e; /* Цвет подзаголовков (светло-зеленый) */
+  font-family: 'Nunito', Arial, sans-serif; /* Заголовки также используют Nunito */
+  font-weight: bold; /* Делаем текст жирным */
 }
 
-.arrow {
-  color: #f92672; /* Цвет стрелки (розовый) */
+.button-container {
+  display: flex;
+  justify-content: space-between; /* Кнопки остаются на своих позициях */
+}
+
+.label-box {
+  background-color: #3a3a3a;
+  border-radius: 5px;
+  padding: 10px; /* Уменьшены отступы */
+  cursor: pointer;
+  flex-grow: 1; /* Занимает доступное пространство */
+  text-align: center; /* Центрирование текста */
+  margin-right: 10px; /* Добавлен отступ справа для первой кнопки */
+}
+
+.label-box:last-child {
+  margin-right: 0; /* Убираем отступ справа для последней кнопки */
+}
+
+.label-box.buy {
+  background-color: #0DBA74; /* Зеленый цвет для кнопки "Покупка" */
+  color: white; /* Цвет текста */
+  padding: 10px; /* Отступы внутри кнопки */
+  border-radius: 5px; /* Закругленные углы */
+  cursor: pointer; /* Курсор в виде указателя при наведении */
+  border-top-left-radius: 15px;
+}
+
+.label-box.sell {
+  background-color: #FF4761; /* Красный цвет для кнопки "Продажа" */
+  color: white; /* Цвет текста */
+  padding: 10px; /* Отступы внутри кнопки */
+  border-radius: 5px; /* Закругленные углы */
+  cursor: pointer; /* Курсор в виде указателя при наведении */
+  border-top-right-radius: 15px;
+}
+
+
+.currency-container {
+  display: flex;
+  justify-content: space-between; /* Боксы остаются на своих позициях */
+  align-items: center;
+  margin-top: 20px; /* Отступ сверху для контейнера валют */
+}
+
+.currency-box {
+  background-color: #3a3a3a; /* Цвет фона для валют */
+  border-radius: 10px; /* Закругленные углы */
+  padding: 10px; /* Отступы внутри контейнера валют */
+  width: calc(40% - 5px); /* Уменьшенная ширина контейнера валют с учетом отступа */
+}
+
+.size-valute{
+  position: center;
 }
 
 .input-container {
-  display: flex;
-  align-items: center; /* Центрирование по вертикали */
+    position: relative; /* Для позиционирования символа валюты */
 }
 
 input[type="number"] {
-  width: 100%; /* Занимает всю ширину контейнера */
-  padding: 10px; /* Отступы внутри поля ввода */
-  border: 1px solid #75715e; /* Граница поля ввода (светло-коричневая) */
-  border-radius: 5px; /* Округленные углы */
-  background-color: #272822; /* Темный фон для поля ввода */
-  color: #f8f8f2; /* Светлый текст в поле ввода */
+    width: calc(100% - 20px); /* Ширина поля ввода с учетом отступов */
+    border: none; /* Убираем рамку у поля ввода */
+    background-color: transparent; /* Прозрачный фон */
+    color: white; /* Цвет текста */
+    font-size: 18px; /* Размер шрифта */
+    padding-left:10px ; /* Отступ слева для поля ввода */
 }
 
-input[type="number"]::placeholder {
-  color: #75715e; /* Цвет плейсхолдера (светло-коричневый) */
+.icon-overlay {
+ font-size :24px ; /* Размер иконки смены валюты */
+ cursor :pointer ; /* Курсор в виде указателя при наведении на иконку */
+ margin :0 ; /* Убираем отступы слева и справа от иконки */
 }
 
-span {
-  font-size: 18px; /* Размер шрифта для символа валюты */
-  margin-left: 10px; /* Отступ слева от поля ввода */
+.amount-container {
+ display :flex ;
+ justify-content :center ;
+ align-items :center ;
+ margin-top :20px ; /* Отступ сверху для контейнера суммы */
 }
 
-.conversion-result {
-  margin-top: 20px;
-  color: #66d9ef; /* Цвет результата конверсии (светло-голубой) */
+.amount-box {
+ background-color :#2c2c2c ; /* Цвет фона для суммы */
+ border-radius :10px ; /* Закругленные углы */
+ padding :10px ; /* Отступы внутри контейнера суммы */
+ width :150px ; /* Ширина контейнера суммы */
+ text-align :center ; /* Центрирование текста внутри контейнера суммы */
 }
 
-.input-result-container {
-  display: flex; /* Используем Flexbox для выравнивания */
-  align-items: center; /* Центрируем по вертикали */
+.amount-box input {
+ border :none ; /* Убираем рамку у поля ввода */
+ background-color :transparent ; /* Прозрачный фон */
+ color:white ; /* Цвет текста */
+ font-size :18px ; /* Размер шрифта */
+ text-align:center ; /* Центрирование текста в поле ввода */
 }
 
-.input-container {
-  display: flex; /* Используем Flexbox для поля ввода */
-  align-items: center; /* Центрируем по вертикали */
+.payment-method {
+ width :100% ;
+ margin-top :20px ;
+ padding :10px ;
+ border-radius :5px ;
+ border:none ;
+ background-color :#3a3a3a ;
+ color:white ;
 }
 
+.exchange-button {
+ width :100% ;
+ padding :10px ;
+ margin-top :20px ;
+ border:none ;
+ border-radius :5px ;
+ background-color :#4CAF50 ; 
+ color:white ;
+ font-size :16px ;
+ cursor:pointer ;
+}
 
+.exchange-button:hover {
+ background-color :#45a049 ; 
+}
 
-@keyframes fadeIn {
+/* Адаптивные стили для мобильных устройств */
+
+@media (max-width:600px) {
+   .home-container {
+       padding:10px; 
+   }
+
+   .currency-container,
+   .button-container {
+       flex-direction:row; 
+       align-items:center; 
+   }
+
+   .currency-box,
+   .label-box {
+       width:auto; 
+       margin-bottom:0; 
+   }
+
+   .amount-container,
+   .amount-box,
+   .exchange-button,
+   .payment-method {
+       width:auto; 
+       margin-top:10px; 
+   }
+}
+.icon-overlay.rotate {
+  animation: rotateAnimationSVG 0.5s forwards;
+}
+
+@keyframes rotateAnimationSVG {
   from {
-      opacity: 0;
+      transform: rotate(0deg);
   }
   to {
-      opacity: 1;
+      transform: rotate(360deg);
   }
 }
 
-.conversion-result {
-  margin-left: 20px; /* Отступ слева от результата конверсии */
-  flex-grow: 1; /* Позволяет этому элементу занимать оставшееся пространство */
-  text-align: center; /* Центрируем текст */
-  animation: fadeIn 0.5s ease-in; /* Применяем анимацию появления */
+.button-container-bottom {
+  display: flex;
+  justify-content: space-around; /* Распределяем кнопки равномерно по ширине */
+  align-items: center; /* Центрируем кнопки по вертикали */
+  width: 100%; /* Занимаем всю ширину */
+  padding: 15px; /* Отступы вокруг контейнера */
+  background-color: #1e1e1e; /* Темный фон контейнера */
+  border-top: 2px solid #000000; /* Верхняя граница для отделения от контента */
 }
 
-.conversion-result span {
-  font-size: 20px; /* Увеличиваем размер шрифта */
-  line-height: 1.5; /* Увеличиваем высоту строки */
+.button-container-bottom button {
+  background-color: transparent; /* Прозрачный фон для кнопок */
+  border: none; /* Убираем рамку */
+  color: white; /* Цвет иконок */
+  display: flex;
+  flex-direction: column; /* Вертикальное расположение иконки и текста */
+  align-items: center; /* Центрируем содержимое кнопки */
+  padding: 10px; /* Отступы внутри кнопок */
+  cursor: pointer; /* Указываем, что это кликабельный элемент */
+  transition: transform 0.2s; /* Плавные переходы для эффектов */
+}
+
+.button-container-bottom button:hover {
+  transform: scale(1.1); /* Увеличение при наведении */
+}
+
+.button-container-bottom svg {
+  width: 40px; /* Ширина иконок */
+  height: 40px; /* Высота иконок */
+  margin-bottom: 5px; /* Отступ между иконкой и текстом */
 }
