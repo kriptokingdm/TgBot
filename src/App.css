@@ -9,7 +9,7 @@ body {
 .home-container {
   max-width: 400px; 
   margin: auto;
-  background-color: #2c2c2c;
+  background-color: #232323;
   border-radius: 10px;
   padding: 20px;
 }
@@ -44,7 +44,6 @@ h3 {
   padding: 10px; /* Отступы внутри кнопки */
   border-radius: 5px; /* Закругленные углы */
   cursor: pointer; /* Курсор в виде указателя при наведении */
-  border-top-left-radius: 15px;
 }
 
 .label-box.sell {
@@ -53,22 +52,36 @@ h3 {
   padding: 10px; /* Отступы внутри кнопки */
   border-radius: 5px; /* Закругленные углы */
   cursor: pointer; /* Курсор в виде указателя при наведении */
-  border-top-right-radius: 15px;
 }
 
 
 .currency-container {
   display: flex;
-  justify-content: space-between; /* Боксы остаются на своих позициях */
+  justify-content: space-between;
   align-items: center;
-  margin-top: 20px; /* Отступ сверху для контейнера валют */
+  margin-top: 7px;
+  position: relative;
+}
+
+.icon-overlay {
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%); 
+  z-index: 1; 
+  transition: transform 0.3s ease; 
+}
+
+.icon-overlay.rotate {
+  transform: translate(-50%, -50%) rotate(360deg); 
 }
 
 .currency-box {
   background-color: #3a3a3a; /* Цвет фона для валют */
   border-radius: 10px; /* Закругленные углы */
   padding: 10px; /* Отступы внутри контейнера валют */
-  width: calc(40% - 5px); /* Уменьшенная ширина контейнера валют с учетом отступа */
+  width: calc(45% - 5px); /* Уменьшенная ширина контейнера валют с учетом отступа */
+  text-align: center  ;
 }
 
 .size-valute{
@@ -89,7 +102,7 @@ input[type="number"] {
 }
 
 .icon-overlay {
- font-size :24px ; /* Размер иконки смены валюты */
+ font-size : 0px ; /* Размер иконки смены валюты */
  cursor :pointer ; /* Курсор в виде указателя при наведении на иконку */
  margin :0 ; /* Убираем отступы слева и справа от иконки */
 }
@@ -213,4 +226,14 @@ input[type="number"] {
   width: 40px; /* Ширина иконок */
   height: 40px; /* Высота иконок */
   margin-bottom: 5px; /* Отступ между иконкой и текстом */
+}
+
+:root {
+  --bg-color: #1e1e1e;
+  --text-color: white;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
