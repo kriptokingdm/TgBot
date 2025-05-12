@@ -1,239 +1,223 @@
-body {
-  font-family: 'Nunito', Arial, sans-serif; /* Используем Nunito */
-  background-color: #1e1e1e;
-  color: white;
-  margin: 0;
-  padding: 20px;
-}
+  /* App.css */
+  :root {
+    --bg-color: #1e1e1e;
+    --text-color: white;
+    --primary: #5F68F6;
+    --secondary: #3a3a3a;
+  }
 
-.home-container {
-  max-width: 400px; 
-  margin: auto;
-  /* background-color: #232323; */
-  border-radius: 10px;
-  padding: 20px;
-}
+  body {
+    font-family: 'Nunito', Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    display: grid;
+    min-height: 100vh;
+    grid-template-rows: auto 1fr auto;
+  }
 
-h3 {
-  font-family: 'Nunito', Arial, sans-serif; /* Заголовки также используют Nunito */
-  font-weight: bold; /* Делаем текст жирным */
-}
+  .home-container {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    grid-template-columns: 1fr;
+  }
 
-.button-container {
-  display: flex;
-  justify-content: space-between; /* Кнопки остаются на своих позициях */
-}
+  /* Header Section */
+  .button-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
 
-.label-box {
-  background-color: #3a3a3a;
-  border-radius: 5px;
-  padding: 10px; /* Уменьшены отступы */
+  /* Currency Exchange Section */
+  .currency-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .currency-box {
+    display: grid;
+    gap: 0.5rem;
+    background-color: var(--secondary);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .input-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Exchange Rate */
+  .rate-info {
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background-color: var(--secondary);
+    border-radius: 10px;
+  }
+
+  /* Payment Methods */
+  .payment-section {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .payment-methods-list {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .payment-method-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: var(--secondary);
+    border-radius: 5px;
+  }
+
+  /* Add Payment Method */
+  .payment-method-container {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .add-method-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+  }
+
+  /* Exchange Button */
+  .exchange-button-container {
+    display: grid;
+  }
+
+  /* Bottom Navigation */
+  .button-container-bottom {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    padding: 1rem 0;
+    background-color: #1e1e1e;
+    border-top: 2px solid #000;
+  }
+
+.icon-overlay {
+  width: 58px;
+  height: 58px;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  flex-grow: 1; /* Занимает доступное пространство */
-  text-align: center; /* Центрирование текста */
-  margin-right: 10px; /* Добавлен отступ справа для первой кнопки */
+  transition: transform 0.5s ease;
+  display: grid;
+  place-items: center; /* Центрируем содержимое */
+  padding: 0; /* Убираем внутренние отступы */
+  transform-origin: center; /* Важно для ровного вращения */
 }
 
-.label-box:last-child {
-  margin-right: 0; /* Убираем отступ справа для последней кнопки */
+.icon-overlay svg {
+  width: 100%; /* Занимает всю область кнопки */
+  height: 100%;
+  transform-origin: center; /* Центр вращения для SVG */
 }
 
-.label-box.buy {
-  background-color: #0DBA74; /* Зеленый цвет для кнопки "Покупка" */
-  color: white; /* Цвет текста */
-  padding: 10px; /* Отступы внутри кнопки */
-  border-radius: 5px; /* Закругленные углы */
-  cursor: pointer; /* Курсор в виде указателя при наведении */
+/* Стили для заблокированного состояния */
+.icon-overlay:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
-.label-box.sell {
-  background-color: #FF4761; /* Красный цвет для кнопки "Продажа" */
-  color: white; /* Цвет текста */
-  padding: 10px; /* Отступы внутри кнопки */
-  border-radius: 5px; /* Закругленные углы */
-  cursor: pointer; /* Курсор в виде указателя при наведении */
+/* Отключаем hover-эффекты при блокировке */
+.icon-overlay:disabled:hover {
+  transform: none;
 }
 
-
-.currency-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 7px;
-  position: relative;
-}
-
-.icon-overlay {
-  position: absolute; 
-  top: 50%; 
-  left: 50%; 
-  transform: translate(-50%, -50%); 
-  z-index: 1; 
-  transition: transform 0.3s ease; 
-}
-
+/* Анимация вращения */
 .icon-overlay.rotate {
-  transform: translate(-50%, -50%) rotate(360deg); 
+  transform: rotate(360deg);
 }
 
-.currency-box {
-  background-color: #3a3a3a; /* Цвет фона для валют */
-  border-radius: 10px; /* Закругленные углы */
-  padding: 10px; /* Отступы внутри контейнера валют */
-  width: calc(45% - 5px); /* Уменьшенная ширина контейнера валют с учетом отступа */
-  text-align: center  ;
+/* Отключаем анимацию при блокировке */
+.icon-overlay:disabled.rotate {
+  transform: rotate(360deg);
+  animation: none;
 }
 
-.size-valute{
-  position: center;
-}
 
-.input-container {
-    position: relative; /* Для позиционирования символа валюты */
-}
-
-input[type="number"] {
-    width: calc(100% - 20px); /* Ширина поля ввода с учетом отступов */
-    border: none; /* Убираем рамку у поля ввода */
-    background-color: transparent; /* Прозрачный фон */
-    color: white; /* Цвет текста */
-    font-size: 18px; /* Размер шрифта */
-    padding-left:10px ; /* Отступ слева для поля ввода */
-}
-
-.icon-overlay {
- font-size : 0px ; /* Размер иконки смены валюты */
- cursor :pointer ; /* Курсор в виде указателя при наведении на иконку */
- margin :0 ; /* Убираем отступы слева и справа от иконки */
-}
-
-.amount-container {
- display :flex ;
- justify-content :center ;
- align-items :center ;
- margin-top :20px ; /* Отступ сверху для контейнера суммы */
-}
-
-.amount-box {
- background-color :#2c2c2c ; /* Цвет фона для суммы */
- border-radius :10px ; /* Закругленные углы */
- padding :10px ; /* Отступы внутри контейнера суммы */
- width :150px ; /* Ширина контейнера суммы */
- text-align :center ; /* Центрирование текста внутри контейнера суммы */
-}
-
-.amount-box input {
- border :none ; /* Убираем рамку у поля ввода */
- background-color :transparent ; /* Прозрачный фон */
- color:white ; /* Цвет текста */
- font-size :18px ; /* Размер шрифта */
- text-align:center ; /* Центрирование текста в поле ввода */
-}
-
-.payment-method {
- width :100% ;
- margin-top :20px ;
- padding :10px ;
- border-radius :5px ;
- border:none ;
- background-color :#3a3a3a ;
- color:white ;
-}
-
-.exchange-button {
- width :100% ;
- padding :10px ;
- margin-top :20px ;
- border:none ;
- border-radius :5px ;
- background-color :#4CAF50 ; 
- color:white ;
- font-size :16px ;
- cursor:pointer ;
-}
-
-.exchange-button:hover {
- background-color :#45a049 ; 
-}
-
-/* Адаптивные стили для мобильных устройств */
-
-@media (max-width:600px) {
-   .home-container {
-       padding:10px; 
-   }
-
-   .currency-container,
-   .button-container {
-       flex-direction:row; 
-       align-items:center; 
-   }
-
-   .currency-box,
-   .label-box {
-       width:auto; 
-       margin-bottom:0; 
-   }
-
-   .amount-container,
-   .amount-box,
-   .exchange-button,
-   .payment-method {
-       width:auto; 
-       margin-top:10px; 
-   }
-}
-.icon-overlay.rotate {
-  animation: rotateAnimationSVG 0.5s forwards;
-}
-
-@keyframes rotateAnimationSVG {
-  from {
-      transform: rotate(0deg);
+  /* Additional Styles */
+  .size-valute {
+    text-align: center;
   }
-  to {
-      transform: rotate(360deg);
+
+  input[type="number"] {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    color: white;
+    font-size: 18px;
+    padding: 0.5rem;
   }
-}
 
-.button-container-bottom {
-  display: flex;
-  justify-content: space-around; /* Распределяем кнопки равномерно по ширине */
-  align-items: center; /* Центрируем кнопки по вертикали */
-  width: 100%; /* Занимаем всю ширину */
-  padding: 15px; /* Отступы вокруг контейнера */
-  background-color: #1e1e1e; /* Темный фон контейнера */
-  border-top: 2px solid #000000; /* Верхняя граница для отделения от контента */
-}
+  .exchange-button {
+    background-color: #3179F5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+  }
 
-.button-container-bottom button {
-  background-color: transparent; /* Прозрачный фон для кнопок */
-  border: none; /* Убираем рамку */
-  color: white; /* Цвет иконок */
-  display: flex;
-  flex-direction: column; /* Вертикальное расположение иконки и текста */
-  align-items: center; /* Центрируем содержимое кнопки */
-  padding: 10px; /* Отступы внутри кнопок */
-  cursor: pointer; /* Указываем, что это кликабельный элемент */
-  transition: transform 0.2s; /* Плавные переходы для эффектов */
-}
+  .label-box {
+    display: grid;
+    place-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
 
-.button-container-bottom button:hover {
-  transform: scale(1.1); /* Увеличение при наведении */
-}
+  .label-box.buy {
+    background-color: #009F00;
+  }
 
-.button-container-bottom svg {
-  width: 40px; /* Ширина иконок */
-  height: 40px; /* Высота иконок */
-  margin-bottom: 5px; /* Отступ между иконкой и текстом */
-}
+  .label-box.sell {
+    background-color: #C94242;
+  }
 
-:root {
-  --bg-color: #1e1e1e;
-  --text-color: white;
-}
+  .loading-message,
+  .error-message {
+    padding: 1rem;
+    text-align: center;
+    border-radius: 5px;
+  }
 
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
+  .error-message {
+    background-color: #ff4444;
+  }
+
+  .payment-method {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: var(--secondary);
+    border: none;
+    color: white;
+    border-radius: 5px;
+  }
+
+  /* Animation */
+  @keyframes rotateAnimation {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
