@@ -1,223 +1,630 @@
-  /* App.css */
-  :root {
-    --bg-color: #1e1e1e;
-    --text-color: white;
-    --primary: #5F68F6;
-    --secondary: #3a3a3a;
-  }
+/* App.css */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --secondary-bg: #f8f9fa;
+  --button-color: #007aff;
+  --border-color: #e1e1e1;
+  --hint-color: #666666;
+  --light-color: #999999;
+  --card-color: #ffffff;
+  --error-color: #ff3b30;
+  --buy-color: #009F00;
+  --sell-color: #C94242;
+  --cards-width: 430px;
+}
 
-  body {
-    font-family: 'Nunito', Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    margin: 0;
-    display: grid;
-    min-height: 100vh;
-    grid-template-rows: auto 1fr auto;
-  }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
 
-  .home-container {
-    display: grid;
-    gap: 1.5rem;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    grid-template-columns: 1fr;
-  }
+.home-container {
+  padding: 20px 16px 70px 16px;
+  max-width: 400px;
+  margin: 0 auto;
+  background: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-  /* Header Section */
-  .button-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
+/* Переключатель Покупка/Продажа */
+.mode-switcher {
+  display: flex;
+  background: var(--secondary-bg);
+  border-radius: 12px;
+  padding: 4px;
+  margin: 0 auto 40px auto;
+  width: var(--cards-width);
+  max-width: 100%;
+  border: 1px solid var(--border-color);
+  box-sizing: border-box;
+}
 
-  /* Currency Exchange Section */
-  .currency-container {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 1rem;
-    position: relative;
-  }
+.mode-button {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: var(--hint-color);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
 
-  .currency-box {
-    display: grid;
-    gap: 0.5rem;
-    background-color: var(--secondary);
-    border-radius: 10px;
-    padding: 1rem;
-  }
+.mode-button.buy.active {
+  background: var(--buy-color);
+  color: white;
+}
 
-  .input-container {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 0.5rem;
-  }
+.mode-button.sell.active {
+  background: var(--sell-color);
+  color: white;
+}
 
-  /* Exchange Rate */
-  .rate-info {
-    display: grid;
-    place-items: center;
-    padding: 1rem;
-    background-color: var(--secondary);
-    border-radius: 10px;
-  }
+/* Горизонтальный блок с карточками валют */
+.currency-cards-horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  width: var(--cards-width);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-  /* Payment Methods */
-  .payment-section {
-    display: grid;
-    gap: 1rem;
-  }
+.currency-card-side {
+  width: 140px;
+  height: 120px;
+  background: var(--card-color);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
+}
 
-  .payment-methods-list {
-    display: grid;
-    gap: 0.5rem;
-  }
+.left-card, .right-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
-  .payment-method-item {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    padding: 0.5rem;
-    background-color: var(--secondary);
-    border-radius: 5px;
-  }
+.currency-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
 
-  /* Add Payment Method */
-  .payment-method-container {
-    display: grid;
-    gap: 1rem;
-  }
+.currency-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+}
 
-  .add-method-form {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.5rem;
-  }
+.currency-rate {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+}
 
-  /* Exchange Button */
-  .exchange-button-container {
-    display: grid;
-  }
+.currency-rate.light {
+  color: var(--light-color);
+  font-weight: 500;
+}
 
-  /* Bottom Navigation */
-  .button-container-bottom {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
-    padding: 1rem 0;
-    background-color: #1e1e1e;
-    border-top: 2px solid #000;
-  }
-
-.icon-overlay {
+/* Кнопка обмена посередине */
+.swap-center-button {
   width: 58px;
   height: 58px;
-  background: transparent;
+  background: none;
   border: none;
   cursor: pointer;
+  flex-shrink: 0;
   transition: transform 0.5s ease;
-  display: grid;
-  place-items: center; /* Центрируем содержимое */
-  padding: 0; /* Убираем внутренние отступы */
-  transform-origin: center; /* Важно для ровного вращения */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.icon-overlay svg {
-  width: 100%; /* Занимает всю область кнопки */
-  height: 100%;
-  transform-origin: center; /* Центр вращения для SVG */
+.swap-center-button.swapped {
+  transform: rotate(180deg);
 }
 
-/* Стили для заблокированного состояния */
-.icon-overlay:disabled {
+.swap-center-button:active {
+  transform: scale(0.95);
+}
+
+.swap-center-button.swapped:active {
+  transform: rotate(180deg) scale(0.95);
+}
+
+/* Анимация для плавного вращения */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+.swap-center-button.swapped {
+  animation: rotate 0.5s ease;
+}
+
+/* Поля ввода суммы */
+.amount-input-section {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  margin-bottom: 30px;
+  width: var(--cards-width);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  align-items: flex-start;
+}
+
+.amount-input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.amount-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--hint-color);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.amount-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.amount-input {
+  width: 100%;
+  padding: 16px;
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-color);
+  font-size: 16px;
+  font-weight: 500;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.amount-input:focus {
+  outline: none;
+  border-color: var(--button-color);
+}
+
+.amount-currency {
+  position: absolute;
+  right: 16px;
+  color: var(--hint-color);
+  font-weight: 500;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* Подсказка минимального лимита */
+.min-limit-hint {
+  font-size: 12px;
+  color: var(--light-color);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Сообщение об ошибке */
+.error-message {
+  color: var(--error-color);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  padding: 10px 12px;
+  background: rgba(255, 59, 48, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  margin-top: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Способ оплаты */
+.payment-section {
+  margin-bottom: 25px;
+  width: var(--cards-width);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-method-item {
+  padding: 18px 16px;
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  text-align: center;
+  color: var(--hint-color);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Кнопка обмена */
+.exchange-button {
+  width: 100%;
+  padding: 20px;
+  border: none;
+  border-radius: 16px;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 10px 0 40px 0;
+  transition: all 0.2s;
+}
+
+.exchange-button.buy {
+  background: var(--buy-color);
+}
+
+.exchange-button.sell {
+  background: var(--sell-color);
+}
+
+.exchange-button:active:not(.disabled) {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+.exchange-button.disabled {
+  background: var(--hint-color);
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
-/* Отключаем hover-эффекты при блокировке */
-.icon-overlay:disabled:hover {
-  transform: none;
+/* НАВИГАЦИЯ - ОБНОВЛЕНО */
+.bottom-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--secondary-bg);
+  border-radius: 20px 20px 0 0;
+  padding: 8px 4px;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  z-index: 1000;
+  gap: 4px;
 }
 
-/* Анимация вращения */
-.icon-overlay.rotate {
-  transform: rotate(360deg);
+.nav-button {
+  background: none;
+  border: none;
+  color: var(--hint-color);
+  padding: 8px 2px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 44px;
+  justify-content: center;
 }
 
-/* Отключаем анимацию при блокировке */
-.icon-overlay:disabled.rotate {
-  transform: rotate(360deg);
-  animation: none;
+.nav-button.active {
+  color: var(--button-color);
+  background: rgba(0, 122, 255, 0.1);
 }
 
+.nav-button svg {
+  width: 22px;
+  height: 22px;
+  transition: all 0.2s;
+}
 
-  /* Additional Styles */
-  .size-valute {
-    text-align: center;
+.nav-button.active svg path {
+  fill: var(--button-color);
+}
+
+.nav-button:hover {
+  background: rgba(0, 122, 255, 0.05);
+}
+
+.nav-button span {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Стили для страниц */
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+/* Стили для профиля */
+.profile-content {
+  width: var(--cards-width);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.profile-section {
+  background: var(--secondary-bg);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.profile-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.profile-item:last-child {
+  border-bottom: none;
+}
+
+.profile-label {
+  color: var(--hint-color);
+  font-size: 14px;
+}
+
+.profile-value {
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.profile-value.verified {
+  color: var(--buy-color);
+}
+
+/* Стили для истории */
+.history-content {
+  width: var(--cards-width);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--secondary-bg);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.transaction-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.transaction-type {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
+}
+
+.transaction-date {
+  font-size: 12px;
+  color: var(--light-color);
+}
+
+.transaction-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.transaction-amount {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
+}
+
+.transaction-status {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.transaction-status.completed {
+  background: rgba(0, 159, 0, 0.1);
+  color: var(--buy-color);
+}
+
+.transaction-status.pending {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+/* Стили для справки */
+.help-content {
+  width: var(--cards-width);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.help-section {
+  background: var(--secondary-bg);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.help-section h3 {
+  margin: 0 0 12px 0;
+  color: var(--text-color);
+  font-size: 16px;
+}
+
+.help-section p {
+  margin: 8px 0;
+  color: var(--hint-color);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+  .home-container {
+    padding: 16px 12px 70px 12px;
+    max-width: none;
   }
-
-  input[type="number"] {
+  
+  .currency-cards-horizontal {
+    gap: 12px;
     width: 100%;
-    border: none;
-    background-color: transparent;
-    color: white;
-    font-size: 18px;
-    padding: 0.5rem;
   }
+  
+  .currency-card-side {
+    width: 130px;
+    height: 110px;
+  }
+  
+  .amount-input-section {
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+  }
+  
+  .amount-input-group {
+    width: 100%;
+  }
+  
+  .bottom-nav {
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+  }
+  
+  .swap-center-button {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .mode-switcher,
+  .currency-cards-horizontal,
+  .amount-input-section {
+    width: 100%;
+  }
+}
 
-  .exchange-button {
-    background-color: #3179F5;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 30px;
+@media (max-width: 380px) {
+  .currency-cards-horizontal {
+    gap: 8px;
+  }
+  
+  .currency-card-side {
+    width: 120px;
+    height: 100px;
+  }
+  
+  .currency-name,
+  .currency-rate {
     font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  }
+  
+  .nav-button {
+    padding: 6px 1px;
+    font-size: 10px;
+  }
+  
+  .nav-button svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .nav-button span {
+    font-size: 9px;
+  }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 320px) {
+  .home-container {
+    padding: 12px 8px 70px 8px;
+  }
+  
+  .currency-cards-horizontal {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .currency-card-side {
     width: 100%;
+    max-width: 200px;
+    height: 100px;
   }
-
-  .label-box {
-    display: grid;
-    place-items: center;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
+  
+  .swap-center-button {
+    transform: rotate(90deg);
   }
-
-  .label-box.buy {
-    background-color: #009F00;
+  
+  .swap-center-button.swapped {
+    transform: rotate(270deg);
   }
-
-  .label-box.sell {
-    background-color: #C94242;
+  
+  .bottom-nav {
+    padding: 6px 2px;
   }
-
-  .loading-message,
-  .error-message {
-    padding: 1rem;
-    text-align: center;
-    border-radius: 5px;
+  
+  .nav-button {
+    min-height: 40px;
   }
-
-  .error-message {
-    background-color: #ff4444;
-  }
-
-  .payment-method {
-    width: 100%;
-    padding: 0.5rem;
-    background-color: var(--secondary);
-    border: none;
-    color: white;
-    border-radius: 5px;
-  }
-
-  /* Animation */
-  @keyframes rotateAnimation {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
+}

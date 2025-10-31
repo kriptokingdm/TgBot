@@ -1,0 +1,485 @@
+/* Help.css - Стили только для компонента Help */
+
+.help-container {
+    padding: 20px 16px 70px 16px;
+    max-width: 400px;
+    margin: 0 auto;
+    background: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.help-content {
+    width: var(--cards-width);
+    max-width: 100%;
+    margin: 0 auto;
+    flex: 1;
+}
+
+.page-subtitle {
+    color: var(--hint-color);
+    font-size: 14px;
+    text-align: center;
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+
+/* Поиск с помощником */
+.assistant-search {
+    margin-bottom: 24px;
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+}
+
+.search-container:focus-within {
+    border-color: var(--button-color);
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+}
+
+.search-icon {
+    font-size: 18px;
+    color: var(--hint-color);
+    margin-right: 12px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+.search-input::placeholder {
+    color: var(--light-color);
+}
+
+.clear-search {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: var(--hint-color);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.clear-search:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Результаты поиска */
+.search-results {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.results-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 12px;
+    color: var(--hint-color);
+    background: var(--secondary-bg);
+    border-radius: 12px 12px 0 0;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: var(--secondary-bg);
+}
+
+.result-type {
+    font-size: 16px;
+    margin-right: 12px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.result-content {
+    flex: 1;
+}
+
+.result-title {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.result-preview {
+    color: var(--hint-color);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* Популярные вопросы */
+.popular-questions h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 12px;
+}
+
+.questions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.question-chip {
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--text-color);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.question-chip:hover {
+    background: var(--button-color);
+    color: white;
+    border-color: var(--button-color);
+    transform: translateY(-1px);
+}
+
+/* Остальные стили остаются такими же как в предыдущей версии */
+.help-section {
+    background: var(--secondary-bg);
+    border-radius: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.help-section.active {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+    padding: 18px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.section-header:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.section-header h3 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.toggle-icon {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--hint-color);
+    transition: transform 0.3s ease;
+}
+
+.help-section.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.section-content {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.help-section.active .section-content {
+    padding: 0 20px 20px 20px;
+    max-height: 1000px;
+}
+
+/* FAQ стили */
+.faq-item {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.faq-item:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.faq-question {
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.faq-answer {
+    color: var(--hint-color);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Список правил */
+.rules-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+}
+
+.rule-item {
+    padding: 8px 0;
+    color: var(--text-color);
+    font-size: 13px;
+    line-height: 1.5;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+    padding-left: 16px;
+}
+
+.rule-item:last-child {
+    border-bottom: none;
+}
+
+.rule-item:before {
+    content: "•";
+    color: var(--button-color);
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.important-note {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text-color);
+    font-size: 13px;
+}
+
+/* Контакты */
+.contacts-list {
+    margin-bottom: 16px;
+}
+
+.contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.contact-item:last-child {
+    border-bottom: none;
+}
+
+.contact-type {
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 13px;
+}
+
+.contact-value {
+    color: var(--button-color);
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.contact-value:hover {
+    text-decoration: underline;
+}
+
+.response-time {
+    text-align: center;
+    color: var(--hint-color);
+    font-size: 12px;
+    padding: 8px;
+    background: rgba(0, 122, 255, 0.05);
+    border-radius: 8px;
+}
+
+/* Инструкция */
+.guide-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.guide-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.step-number {
+    background: var(--button-color);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-content strong {
+    color: var(--text-color);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.step-content p {
+    color: var(--hint-color);
+    font-size: 12px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Уведомление о безопасности */
+.security-notice {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.security-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.security-content h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.security-content p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .help-container {
+        padding: 16px 12px 70px 12px;
+    }
+    
+    .help-content {
+        width: 100%;
+    }
+    
+    .questions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        padding: 16px;
+    }
+    
+    .section-header h3 {
+        font-size: 15px;
+    }
+    
+    .section-content {
+        padding: 0 16px;
+    }
+    
+    .help-section.active .section-content {
+        padding: 0 16px 16px 16px;
+    }
+    
+    .search-results {
+        max-height: 250px;
+    }
+}
+
+@media (max-width: 380px) {
+    .security-notice {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 320px) {
+    .help-container {
+        padding: 12px 8px 70px 8px;
+    }
+    
+    .section-header {
+        padding: 14px 12px;
+    }
+    
+    .section-header h3 {
+        font-size: 14px;
+    }
+    
+    .section-content {
+        padding: 0 12px;
+    }
+    
+    .help-section.active .section-content {
+        padding: 0 12px 12px 12px;
+    }
+    
+    .search-container {
+        padding: 10px 12px;
+    }
+}

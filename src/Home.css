@@ -1,0 +1,559 @@
+
+
+/* Home.css - Добавляем новые стили для реквизитов */
+
+/* Заголовок секции оплаты */
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.payment-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.add-payment-button {
+    background: var(--button-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-payment-button:hover {
+    background: #0066cc;
+    transform: translateY(-1px);
+}
+
+/* Форма добавления реквизитов */
+.add-payment-form {
+    background: white;
+    border: 2px solid var(--button-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.form-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.close-form {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--hint-color);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.close-form:hover {
+    background-color: var(--secondary-bg);
+}
+
+.form-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.payment-input {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text-color);
+    background: var(--secondary-bg);
+    transition: border-color 0.2s ease;
+}
+
+.payment-input:focus {
+    outline: none;
+    border-color: var(--button-color);
+}
+
+.payment-input::placeholder {
+    color: var(--light-color);
+}
+
+.save-payment-button {
+    width: 100%;
+    background: var(--buy-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.save-payment-button:hover {
+    background: #008800;
+    transform: translateY(-1px);
+}
+
+/* Обновленные стили для списка реквизитов */
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.payment-method-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--secondary-bg);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.payment-method-item:hover {
+    background: #f0f0f0;
+    transform: translateY(-1px);
+}
+
+.payment-method-item.selected {
+    border-color: var(--button-color);
+    background: rgba(0, 122, 255, 0.05);
+}
+
+.payment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.payment-name {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+.payment-number {
+    color: var(--hint-color);
+    font-size: 13px;
+}
+
+.delete-payment {
+    background: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    color: var(--error-color);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.delete-payment:hover {
+    background: var(--error-color);
+    color: white;
+}
+
+/* Адаптивность для новых элементов */
+@media (max-width: 480px) {
+    .payment-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .add-payment-button {
+        align-self: flex-end;
+    }
+    
+    .add-payment-form {
+        padding: 12px;
+    }
+    
+    .payment-method-item {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 380px) {
+    .payment-info {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .payment-name,
+    .payment-number {
+        font-size: 12px;
+    }
+}
+/* Home.css - Добавляем новые стили для улучшенной формы реквизитов */
+
+/* Сообщение когда нет реквизитов */
+.no-payments-message {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--secondary-bg);
+    border-radius: 12px;
+    border: 2px dashed var(--border-color);
+}
+
+.no-payments-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.no-payments-message p {
+    color: var(--hint-color);
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Группа полей ввода */
+.form-input-group {
+    margin-bottom: 16px;
+}
+
+.input-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+/* Стили для выбора банка */
+.bank-select-container {
+    position: relative;
+    width: 100%;
+}
+
+.bank-select {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--secondary-bg);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.2s ease;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.bank-select.has-value {
+    color: var(--text-color);
+}
+
+.bank-select:not(.has-value) {
+    color: var(--light-color);
+}
+
+.bank-select:hover {
+    border-color: var(--button-color);
+}
+
+.dropdown-arrow {
+    color: var(--hint-color);
+    font-size: 12px;
+    transition: transform 0.2s ease;
+}
+
+.bank-select-container:focus-within .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.bank-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
+}
+
+.bank-option {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    color: var(--text-color);
+    transition: background-color 0.2s ease;
+}
+
+.bank-option:last-child {
+    border-bottom: none;
+}
+
+.bank-option:hover {
+    background-color: var(--secondary-bg);
+}
+
+.bank-option:active {
+    background-color: rgba(0, 122, 255, 0.1);
+}
+
+/* Стили для поля ввода с ошибкой */
+.payment-input.error {
+    border-color: var(--error-color);
+    background: rgba(255, 59, 48, 0.05);
+}
+
+.input-error {
+    color: var(--error-color);
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* Кнопка сохранения карты */
+.save-payment-button:disabled {
+    background: var(--hint-color);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.save-payment-button:disabled:hover {
+    background: var(--hint-color);
+    transform: none;
+}
+
+/* Улучшенные стили для карточек оплаты */
+.payment-method-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--secondary-bg);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.payment-method-item:hover {
+    background: #f0f0f0;
+    transform: translateY(-1px);
+}
+
+.payment-method-item.selected {
+    border-color: var(--button-color);
+    background: rgba(0, 122, 255, 0.05);
+}
+
+.payment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.payment-name {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+.payment-number {
+    color: var(--hint-color);
+    font-size: 13px;
+}
+
+.delete-payment {
+    background: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    color: var(--error-color);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.delete-payment:hover {
+    background: var(--error-color);
+    color: white;
+}
+
+/* Адаптивность для новых элементов */
+@media (max-width: 480px) {
+    .payment-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .add-payment-button {
+        align-self: flex-end;
+    }
+    
+    .add-payment-form {
+        padding: 12px;
+    }
+    
+    .payment-method-item {
+        padding: 12px;
+    }
+    
+    .no-payments-message {
+        padding: 30px 16px;
+    }
+    
+    .no-payments-icon {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 380px) {
+    .payment-info {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .payment-name,
+    .payment-number {
+        font-size: 12px;
+    }
+    
+    .bank-select {
+        padding: 10px;
+        font-size: 13px;
+    }
+    
+    .bank-option {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+/* Стили для скролла в выпадающем списке */
+.bank-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.bank-dropdown::-webkit-scrollbar-track {
+    background: var(--secondary-bg);
+    border-radius: 3px;
+}
+
+.bank-dropdown::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.bank-dropdown::-webkit-scrollbar-thumb:hover {
+    background: var(--hint-color);
+}
+
+/* Home.css - Добавляем стили для крипто-адресов */
+
+/* Стили для выбора сети */
+.network-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--secondary-bg);
+    font-size: 14px;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.network-select:focus {
+    outline: none;
+    border-color: var(--button-color);
+}
+
+/* Стили для крипто-адресов */
+.crypto-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.crypto-network {
+    background: var(--button-color);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.crypto-address {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--hint-color);
+    font-size: 12px;
+    font-family: monospace;
+}
+
+.copy-address {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    font-size: 12px;
+}
+
+.copy-address:hover {
+    background-color: var(--secondary-bg);
+}
+
+/* Адаптивность для крипто-адресов */
+@media (max-width: 480px) {
+    .crypto-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .crypto-network {
+        align-self: flex-start;
+    }
+    
+    .crypto-address {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}

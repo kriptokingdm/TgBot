@@ -1,262 +1,63 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import './App.css';
+import Welcome from './Welcome';
+import Home from './Home';
+import Profile from './Profile';
+import History from './History';
+import Help from './Help';
 
-function Home() {
-    const [isUsdtOnTop, setIsUsdtOnTop] = useState(true);
-    const [amount, setAmount] = useState(0);
-    const [exchangeRate, setExchangeRate] = useState(75); // Значение по умолчанию
-    const [isRotated, setIsRotated] = useState(false);
-    const [paymentMethods, setPaymentMethods] = useState(["Сбербанк", "Тинькофф", "QIWI"]);
-    const [newPaymentMethod, setNewPaymentMethod] = useState("");
-    const [isAddingPaymentMethod, setIsAddingPaymentMethod] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [isAnimating, setIsAnimating] = useState(false); // Новое состояние для анимации
+// Проверяем импорты
+console.log('Welcome type:', typeof Welcome);
+console.log('Home type:', typeof Home);
+console.log('Profile type:', typeof Profile);
+console.log('History type:', typeof History);
 
+function App() {
+    const [currentPage, setCurrentPage] = useState('welcome');
 
+    // Проверяем авторизацию при загрузке
     useEffect(() => {
-        // Получение информации о теме из Telegram Web App
-        if (window.Telegram && window.Telegram.WebApp) {
-            const themeParams = window.Telegram.WebApp.themeParams;
-            if (themeParams) {
-                document.documentElement.style.setProperty('--bg-color', themeParams.bg_color || '#1e1e1e');
-                document.documentElement.style.setProperty('--text-color', themeParams.text_color || 'white');
-            }
-        }
-
-        // Получение курса доллара от ЦБ РФ
-        const fetchExchangeRate = async () => {
-            setIsLoading(true);
-            setError(null);
-            try {
-                const response = await axios.get('https://www.cbr-xml-daily.ru/daily_json.js');
-                const usdRate = response.data.Valute.USD.Value;
-                setExchangeRate(usdRate);
-            } catch (error) {
-                console.error("Ошибка при получении курса:", error);
-                setError("Не удалось получить текущий курс. Используется значение по умолчанию.");
-                // Можно установить курс USDT/RUB, если известно соотношение USDT/USD
-                setExchangeRate(75); // Значение по умолчанию
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchExchangeRate();
-
-        // Загружаем сохраненные способы оплаты из localStorage
-        const savedMethods = localStorage.getItem('paymentMethods');
-        if (savedMethods) {
-            setPaymentMethods(JSON.parse(savedMethods));
+        const loggedIn = localStorage.getItem('isLoggedIn');
+        const userData = localStorage.getItem('currentUser');
+        
+        if (loggedIn === 'true' && userData) {
+            setCurrentPage('home');
         }
     }, []);
 
-    useEffect(() => {
-        // Сохраняем способы оплаты в localStorage при изменении
-        localStorage.setItem('paymentMethods', JSON.stringify(paymentMethods));
-    }, [paymentMethods]);
+    const navigateTo = (page) => {
+        console.log('Navigating to:', page);
+        setCurrentPage(page);
+    };
 
-    const toggleCurrencies = (event) => {
-        event.preventDefault();
-        if (isAnimating) return; // Блокируем действие во время анимации
+    const handleLogin = () => {
+        console.log('Login successful');
+        setCurrentPage('home');
+    };
+
+    const renderPage = () => {
+        console.log('Current page:', currentPage);
         
-        setIsAnimating(true); // Начало анимации
-        setIsRotated(!isRotated);
-        setIsUsdtOnTop(!isUsdtOnTop);
-
-        // Разблокировка через время анимации
-        setTimeout(() => {
-            setIsAnimating(false);
-        }, 500); // 500ms соответствует длительности анимации
-    };
-
-
-    const handleAmountChange = (e) => {
-        const value = parseFloat(e.target.value);
-        if (!isNaN(value) && value >= 0) {
-            setAmount(value);
-        } else {
-            setAmount(0);
+        switch (currentPage) {
+            case 'welcome':
+                return <Welcome navigateTo={handleLogin} />;
+            case 'home':
+                return <Home navigateTo={navigateTo} />;
+            case 'profile':
+                return <Profile navigateTo={navigateTo} />;
+            case 'history':
+                return <History navigateTo={navigateTo} />;
+             case 'help':
+                return <Help navigateTo={navigateTo} />;
         }
     };
 
-    const convertedAmount = isUsdtOnTop ? amount * exchangeRate : amount / exchangeRate;
-
-    const handleAddPaymentMethod = (e) => {
-        e.preventDefault();
-        if (newPaymentMethod.trim() !== "") {
-            setPaymentMethods([...paymentMethods, newPaymentMethod.trim()]);
-            setNewPaymentMethod("");
-            setIsAddingPaymentMethod(false);
-        }
-    };
-
-    const handleRemovePaymentMethod = (index) => {
-        const updatedMethods = [...paymentMethods];
-        updatedMethods.splice(index, 1);
-        setPaymentMethods(updatedMethods);
-    };
-
-    
     return (
-        <div className="home-container">
-            {isLoading && <div className="loading-message">Загрузка курса...</div>}
-            {error && <div className="error-message">{error}</div>}
-
-            {/* Кнопки покупки и продажи */}
-            <div className="button-container">
-                <div
-                    className={`label-box buy ${isUsdtOnTop ? 'active' : ''}`}
-                    onClick={() => setIsUsdtOnTop(true)}
-                >
-                    Покупка
-                </div>
-                <div
-                    className={`label-box sell ${!isUsdtOnTop ? 'active' : ''}`}
-                    onClick={() => setIsUsdtOnTop(false)}
-                >
-                    Продажа
-                </div>
-            </div>
-
-            <div className="currency-container">
-                <div className="currency-box">
-                    <h3 className='size-valute'>{isUsdtOnTop ? "USDT" : "RUB"}</h3>
-                    <div className="input-container">
-                        <input
-                            type="number"
-                            placeholder={isUsdtOnTop ? "Сумма в USDT" : "Сумма в ₽"}
-                            value={isUsdtOnTop ? amount : convertedAmount.toFixed(2)}
-                            onChange={handleAmountChange}
-                            min="0"
-                            step="0.01"
-                        />
-                        <span className="currency-symbol">
-                            {isUsdtOnTop ? "USDT" : "₽"}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Иконка смены валют с анимацией */}
-                <span className={`icon-overlay ${isRotated ? 'rotate' : ''}`} onClick={toggleCurrencies}>
-                    <svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="29" cy="29" r="26.5" fill="#5F68F6" stroke="#1C1C1E" stroke-width="5" />
-                        <path d="M37.3333 17.5424C40.8689 20.1183 43.1667 24.2909 43.1667 29.0001C43.1667 36.8241 36.824 43.1667 29 43.1667H28.1667M20.6667 40.4577C17.1311 37.8819 14.8333 33.7093 14.8333 29.0001C14.8333 21.176 21.176 14.8334 29 14.8334H29.8333M30.6667 46.3334L27.3333 43.0001L30.6667 39.6667M27.3333 18.3334L30.6667 15.0001L27.3333 11.6667" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-
-
-                </span>
-
-                <div className="currency-box">
-                    <h3>{isUsdtOnTop ? "RUB" : "USDT"}</h3>
-                    <div className="input-container">
-                        <input
-                            type="number"
-                            placeholder={isUsdtOnTop ? "Сумма в ₽" : "Сумма в USDT"}
-                            value={isUsdtOnTop ? convertedAmount.toFixed(2) : amount}
-                            readOnly
-                        />
-                        <span className="currency-symbol">
-                            {isUsdtOnTop ? "₽" : "USDT"}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            {/* Текущий курс */}
-            <div className="rate-info">
-                Текущий курс: 1 USDT = {exchangeRate.toFixed(2)} ₽
-            </div>
-
-            {/* Способы оплаты */}
-            <div className="payment-section">
-                <label>Способ оплаты:</label>
-                <select className="payment-method">
-                    <option value="">Выберите способ оплаты</option>
-                    {paymentMethods.map((method, index) => (
-                        <option key={index} value={method}>{method}</option>
-                    ))}
-                </select>
-
-                <div className="payment-methods-list">
-                    {paymentMethods.map((method, index) => (
-                        <div key={index} className="payment-method-item">
-                            {method}
-                            <button
-                                onClick={() => handleRemovePaymentMethod(index)}
-                                className="remove-method-btn"
-                            >
-                                ×
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Добавление нового способа оплаты */}
-            <div className="payment-method-container">
-                <button
-                    onClick={() => setIsAddingPaymentMethod(!isAddingPaymentMethod)}
-                    className="add-method-btn"
-                >
-                    {isAddingPaymentMethod ? 'Отмена' : '+ Добавить способ оплаты'}
-                </button>
-
-                {isAddingPaymentMethod && (
-                    <form onSubmit={handleAddPaymentMethod} className="add-method-form">
-                        <input
-                            type="text"
-                            placeholder="Введите новый способ оплаты"
-                            value={newPaymentMethod}
-                            onChange={(e) => setNewPaymentMethod(e.target.value)}
-                            required
-                        />
-                        <button type="submit" className="submit-method-btn">Добавить</button>
-                    </form>
-                )}
-            </div>
-
-            {/* Кнопка обмена */}
-            <button className="exchange-button">
-                {isUsdtOnTop ? 'Купить USDT' : 'Продать USDT'}
-            </button>
-
-            {/* Нижняя панель навигации */}
-            <div className="button-container-bottom">
-                <button onClick={() => console.log("Обмен")}>
-                    <svg width="101" height="53" viewBox="0 0 101 53" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M37.25 18C37.25 10.8203 43.0703 5 50.25 5C57.4297 5 63.25 10.8203 63.25 18C63.25 25.1797 57.4297 31 50.25 31C43.0703 31 37.25 25.1797 37.25 18ZM48.2451 10.9443C48.552 11.2512 48.552 11.7488 48.2451 12.0557L46.6322 13.6686H55.3712C55.8052 13.6686 56.1571 14.0205 56.1571 14.4545C56.1571 14.8886 55.8052 15.2405 55.3712 15.2405H46.6322L48.2451 16.8534C48.552 17.1603 48.552 17.6579 48.2451 17.9648C47.9382 18.2717 47.4406 18.2717 47.1336 17.9648L44.1791 15.0103C44.0317 14.8629 43.9489 14.663 43.9489 14.4545C43.9489 14.2461 44.0317 14.0462 44.1791 13.8988L47.1336 10.9443C47.4406 10.6374 47.9382 10.6374 48.2451 10.9443ZM52.4479 19.1466C52.141 18.8397 52.141 18.3421 52.4479 18.0352C52.7548 17.7283 53.2524 17.7283 53.5594 18.0352L56.5139 20.9897C56.6613 21.1371 56.7441 21.337 56.7441 21.5455C56.7441 21.7539 56.6613 21.9538 56.5139 22.1012L53.5594 25.0557C53.2524 25.3626 52.7548 25.3626 52.4479 25.0557C52.141 24.7488 52.141 24.2512 52.4479 23.9443L54.0608 22.3314H45.3218C44.8878 22.3314 44.5359 21.9795 44.5359 21.5455C44.5359 21.1114 44.8878 20.7595 45.3218 20.7595H54.0608L52.4479 19.1466Z" fill="#007CFF" />
-                        <path d="M36.6305 37.1206C38.8595 37.1206 40.2613 38.6621 40.2613 41.1274C40.2613 43.5928 38.8595 45.1289 36.6305 45.1289C34.3961 45.1289 32.9996 43.5928 32.9996 41.1274C32.9996 38.6621 34.3961 37.1206 36.6305 37.1206ZM36.6305 38.1787C35.1588 38.1787 34.2296 39.3174 34.2296 41.1274C34.2296 42.9321 35.1588 44.0708 36.6305 44.0708C38.1021 44.0708 39.026 42.9321 39.026 41.1274C39.026 39.3174 38.1021 38.1787 36.6305 38.1787ZM44.1922 45.1074C42.4251 45.1074 41.469 43.9526 41.469 41.7183C41.469 38.5815 42.3821 37.3086 44.5306 37.2334L45.0354 37.2173C45.6424 37.1904 46.2547 37.0776 46.5125 36.938V37.8994C46.3675 38.0337 45.7928 38.1733 45.0999 38.2002L44.6058 38.2163C43.0965 38.27 42.6185 38.9468 42.409 40.542H42.452C42.8118 39.876 43.4939 39.5107 44.3802 39.5107C45.9056 39.5107 46.8831 40.5742 46.8831 42.2393C46.8831 44.0171 45.8572 45.1074 44.1922 45.1074ZM44.1814 44.1353C45.1375 44.1353 45.6961 43.4585 45.6961 42.2554C45.6961 41.1113 45.1375 40.4561 44.1814 40.4561C43.22 40.4561 42.6561 41.1113 42.6561 42.2554C42.6561 43.4585 43.2146 44.1353 44.1814 44.1353ZM49.2993 45H48.1821V39.3496H49.6377L51.4478 43.4907H51.4907L53.3115 39.3496H54.7349V45H53.6069V41.0791H53.5693L51.8774 44.7798H51.0288L49.3369 41.0791H49.2993V45ZM58.6496 40.1821C57.8386 40.1821 57.2692 40.7998 57.2102 41.6538H60.0354C60.0085 40.7891 59.4606 40.1821 58.6496 40.1821ZM60.03 43.3403H61.1311C60.9699 44.3716 59.9924 45.1074 58.6979 45.1074C57.0383 45.1074 56.0339 43.9849 56.0339 42.2017C56.0339 40.4292 57.0544 39.2476 58.6496 39.2476C60.218 39.2476 61.1955 40.354 61.1955 42.0674V42.4648H57.2048V42.5347C57.2048 43.5176 57.7956 44.1675 58.7248 44.1675C59.3854 44.1675 59.8742 43.8345 60.03 43.3403ZM66.2006 45V42.54H63.6439V45H62.4892V39.3496H63.6439V41.627H66.2006V39.3496H67.3554V45H66.2006Z" fill="#007CFF" />
-                    </svg>
-                </button>
-
-                <button onClick={() => console.log("Профиль")}>
-                <svg width="101" height="53" viewBox="0 0 101 53" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M63.75 18C63.75 25.1797 57.9297 31 50.75 31C43.5703 31 37.75 25.1797 37.75 18C37.75 10.8203 43.5703 5 50.75 5C57.9297 5 63.75 10.8203 63.75 18ZM54.75 15C54.75 17.2091 52.9591 19 50.75 19C48.5409 19 46.75 17.2091 46.75 15C46.75 12.7909 48.5409 11 50.75 11C52.9591 11 54.75 12.7909 54.75 15ZM58.3196 24.9231C58.1436 24.5007 57.8814 24.3274 57.3569 23.9809C55.4621 22.7289 53.1912 22 50.7501 22C48.309 22 46.0381 22.7289 44.1432 23.981C43.6187 24.3276 43.3565 24.5008 43.1806 24.9232C43.0585 25.2163 43.0585 25.7839 43.1806 26.0769C43.3565 26.4993 43.6188 26.6726 44.1432 27.0191C46.0381 28.2711 48.3089 29 50.75 29C53.1912 29 55.4621 28.2711 57.3569 27.019C57.8814 26.6724 58.1436 26.4992 58.3196 26.0768C58.4417 25.7838 58.4417 25.2161 58.3196 24.9231Z" fill="#858589"/>
-<path d="M34.0912 45H32.8935V38.2969H29.0155V45H27.807V37.2495H34.0912V45ZM38.7311 39.2583C40.1651 39.2583 41.1105 40.3862 41.1105 42.1748C41.1105 43.9634 40.1705 45.0967 38.7525 45.0967C37.9415 45.0967 37.297 44.6992 36.9747 44.0708H36.9479V46.8691H35.7877V39.3496H36.9103V40.3218H36.9317C37.2647 39.6719 37.9146 39.2583 38.7311 39.2583ZM38.4249 44.1138C39.3434 44.1138 39.9181 43.3618 39.9181 42.1748C39.9181 40.9932 39.3434 40.2358 38.4249 40.2358C37.5387 40.2358 36.9425 41.0093 36.9425 42.1748C36.9425 43.3511 37.5333 44.1138 38.4249 44.1138ZM44.8426 45.1074C43.2259 45.1074 42.1624 43.9956 42.1624 42.1748C42.1624 40.3594 43.2313 39.2476 44.8426 39.2476C46.4539 39.2476 47.5228 40.3594 47.5228 42.1748C47.5228 43.9956 46.4593 45.1074 44.8426 45.1074ZM44.8426 44.1514C45.7557 44.1514 46.3411 43.4316 46.3411 42.1748C46.3411 40.9233 45.7503 40.2036 44.8426 40.2036C43.9349 40.2036 43.344 40.9233 43.344 42.1748C43.344 43.4316 43.9349 44.1514 44.8426 44.1514ZM51.5503 44.1406V40.209C50.4492 40.2358 49.7456 40.9771 49.7456 42.1748C49.7456 43.3779 50.4438 44.1084 51.5503 44.1406ZM54.4722 42.1748C54.4722 40.9717 53.7686 40.2412 52.6675 40.209V44.1406C53.7632 44.1138 54.4722 43.3779 54.4722 42.1748ZM51.5449 45.0752C49.7456 45.0376 48.5693 43.9365 48.5693 42.1748C48.5693 40.4238 49.751 39.3066 51.5449 39.2798V37.5181H52.6729V39.2798C54.4614 39.312 55.6431 40.4185 55.6431 42.1748C55.6431 43.9258 54.4561 45.043 52.6729 45.0752V46.8691H51.5449V45.0752ZM58.0861 45H56.9421V39.3496H58.0861V43.3081H58.1291L60.7395 39.3496H61.8835V45H60.7395V41.0308H60.6965L58.0861 45ZM65.1376 42.4272C65.0302 44.0278 64.6273 45.0537 63.3598 45.0537C63.1718 45.0537 63.0375 45.0215 62.9677 44.9946V43.9741C63.0214 43.9902 63.1288 44.0171 63.2738 44.0171C63.8217 44.0171 64.015 43.3618 64.0795 42.3789L64.2729 39.3496H68.1884V45H67.0336V40.2681H65.2934L65.1376 42.4272ZM71.8668 42.0029H70.8893V44.0869H71.8668C72.5328 44.0869 72.9625 43.668 72.9625 43.0449C72.9625 42.4165 72.5274 42.0029 71.8668 42.0029ZM69.7345 45V39.3496H70.8893V41.0952H71.9688C73.274 41.0952 74.1173 41.8525 74.1173 43.0449C74.1173 44.2427 73.274 45 71.9688 45H69.7345Z" fill="#3C3C43" fill-opacity="0.6"/>
-</svg>
-
-
-                </button>
-
-                <button onClick={() => console.log("История")}>
-                    <svg width="27" height="26" viewBox="0 0 27 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0.25 13C0.25 5.8203 6.0703 0 13.25 0C20.4297 0 26.25 5.8203 26.25 13C26.25 20.1797 20.4297 26 13.25 26C6.0703 26 0.25 20.1797 0.25 13ZM11.2451 5.94428C11.552 6.25119 11.552 6.7488 11.2451 7.05572L9.63218 8.66864H18.3712C18.8052 8.66864 19.1571 9.0205 19.1571 9.45455C19.1571 9.88859 18.8052 10.2405 18.3712 10.2405H9.63218L11.2451 11.8534C11.552 12.1603 11.552 12.6579 11.2451 12.9648C10.9382 13.2717 10.4406 13.2717 10.1336 12.9648L7.1791 10.0103C7.03172 9.86288 6.94892 9.66298 6.94892 9.45455C6.94892 9.24611 7.03172 9.04621 7.1791 8.89882L10.1336 5.94428C10.4406 5.63736 10.9382 5.63736 11.2451 5.94428ZM15.4479 14.1466C15.141 13.8397 15.141 13.3421 15.4479 13.0352C15.7548 12.7283 16.2524 12.7283 16.5594 13.0352L19.5139 15.9897C19.6613 16.1371 19.7441 16.337 19.7441 16.5455C19.7441 16.7539 19.6613 16.9538 19.5139 17.1012L16.5594 20.0557C16.2524 20.3626 15.7548 20.3626 15.4479 20.0557C15.141 19.7488 15.141 19.2512 15.4479 18.9443L17.0608 17.3314H8.32182C7.88777 17.3314 7.53591 16.9795 7.53591 16.5455C7.53591 16.1114 7.88777 15.7595 8.32182 15.7595H17.0608L15.4479 14.1466Z" fill="#007CFF" />
-                    </svg>
-
-                </button>
-
-                <button onClick={() => console.log("Справка")}>
-                    <svg width="101" height="53" viewBox="0 0 101 53" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M37.75 18C37.75 10.8203 43.5703 5 50.75 5C57.9297 5 63.75 10.8203 63.75 18C63.75 25.1797 57.9297 31 50.75 31C43.5703 31 37.75 25.1797 37.75 18ZM46.4167 18C46.4167 19.0833 45.3333 20.1667 44.25 20.1667C43.1667 20.1667 42.0833 19.0833 42.0833 18C42.0833 16.9167 43.1667 15.8333 44.25 15.8333C45.3333 15.8333 46.4167 16.9167 46.4167 18ZM52.9167 18C52.9167 19.0833 51.8333 20.1667 50.75 20.1667C49.6667 20.1667 48.5833 19.0833 48.5833 18C48.5833 16.9167 49.6667 15.8333 50.75 15.8333C51.8333 15.8333 52.9167 16.9167 52.9167 18ZM57.25 20.1667C58.3333 20.1667 59.4167 19.0833 59.4167 18C59.4167 16.9167 58.3333 15.8333 57.25 15.8333C56.1667 15.8333 55.0833 16.9167 55.0833 18C55.0833 19.0833 56.1667 20.1667 57.25 20.1667Z" fill="#3C3C43" fill-opacity="0.6" />
-                        <path d="M32.4691 45.145C30.2938 45.145 28.9188 43.5928 28.9188 41.1221C28.9188 38.6675 30.3046 37.1045 32.4691 37.1045C34.1771 37.1045 35.4823 38.1411 35.7401 39.688H34.5316C34.2792 38.7695 33.4735 38.1733 32.4691 38.1733C31.0619 38.1733 30.1488 39.3281 30.1488 41.1221C30.1488 42.9321 31.0512 44.0762 32.4745 44.0762C33.5111 44.0762 34.2577 43.5713 34.5316 42.7065H35.7401C35.4071 44.2427 34.2094 45.145 32.4691 45.145ZM40.756 45V40.2681H38.253V45H37.0982V39.3496H41.9161V45H40.756ZM46.4163 39.2583C47.8504 39.2583 48.7957 40.3862 48.7957 42.1748C48.7957 43.9634 47.8558 45.0967 46.4378 45.0967C45.6268 45.0967 44.9822 44.6992 44.66 44.0708H44.6331V46.8691H43.4729V39.3496H44.5955V40.3218H44.617C44.95 39.6719 45.5999 39.2583 46.4163 39.2583ZM46.1102 44.1138C47.0286 44.1138 47.6033 43.3618 47.6033 42.1748C47.6033 40.9932 47.0286 40.2358 46.1102 40.2358C45.2239 40.2358 44.6277 41.0093 44.6277 42.1748C44.6277 43.3511 45.2186 44.1138 46.1102 44.1138ZM52.0767 44.1782C52.8877 44.1782 53.5215 43.6196 53.5215 42.8838V42.438L52.1304 42.5239C51.4375 42.5723 51.0454 42.8784 51.0454 43.3618C51.0454 43.856 51.4536 44.1782 52.0767 44.1782ZM51.7544 45.0967C50.6479 45.0967 49.8745 44.4092 49.8745 43.394C49.8745 42.4058 50.6318 41.7988 51.9746 41.7236L53.5215 41.6323V41.1973C53.5215 40.5688 53.0972 40.1929 52.3882 40.1929C51.7168 40.1929 51.2979 40.5151 51.1958 41.02H50.1001C50.1646 39.9995 51.0347 39.2476 52.4312 39.2476C53.8008 39.2476 54.6763 39.9727 54.6763 41.106V45H53.5645V44.0708H53.5376C53.21 44.6992 52.4956 45.0967 51.7544 45.0967ZM58.5266 40.1929H57.3396V41.6753H58.4138C59.069 41.6753 59.3967 41.4229 59.3967 40.9233C59.3967 40.4561 59.0905 40.1929 58.5266 40.1929ZM58.489 42.4863H57.3396V44.1567H58.6179C59.2731 44.1567 59.6276 43.8667 59.6276 43.3242C59.6276 42.7656 59.2517 42.4863 58.489 42.4863ZM56.1955 45V39.3496H58.7629C59.864 39.3496 60.53 39.8975 60.53 40.7891C60.53 41.3745 60.111 41.9062 59.5686 42.0083V42.0513C60.299 42.1479 60.7824 42.6636 60.7824 43.3726C60.7824 44.3662 60.0197 45 58.7951 45H56.1955ZM64.4071 42.0029L67.0067 45H65.5512L63.3114 42.395H63.2685V45H62.1137V39.3496H63.2685V41.7666H63.3114L65.5243 39.3496H66.9101L64.4071 42.0029ZM69.8741 44.1782C70.6852 44.1782 71.3189 43.6196 71.3189 42.8838V42.438L69.9278 42.5239C69.235 42.5723 68.8429 42.8784 68.8429 43.3618C68.8429 43.856 69.2511 44.1782 69.8741 44.1782ZM69.5519 45.0967C68.4454 45.0967 67.672 44.4092 67.672 43.394C67.672 42.4058 68.4293 41.7988 69.7721 41.7236L71.3189 41.6323V41.1973C71.3189 40.5688 70.8946 40.1929 70.1856 40.1929C69.5143 40.1929 69.0953 40.5151 68.9933 41.02H67.8976C67.962 39.9995 68.8321 39.2476 70.2286 39.2476C71.5982 39.2476 72.4737 39.9727 72.4737 41.106V45H71.3619V44.0708H71.3351C71.0074 44.6992 70.2931 45.0967 69.5519 45.0967Z" fill="#3C3C43" fill-opacity="0.6" />
-                    </svg>
-
-                </button>
-            </div>
+        <div className="App">
+            {renderPage()}
         </div>
     );
 }
 
-export default Home;
+export default App;
