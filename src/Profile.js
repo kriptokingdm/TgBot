@@ -1,58 +1,186 @@
 // src/Profile.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Profile.css';
 
 function Profile({ navigateTo }) {
-    // Правильно получаем данные пользователя
-    const userDataString = localStorage.getItem('currentUser');
-    const userData = userDataString ? JSON.parse(userDataString) : {};
-    
-    const { 
-        username = 'Пользователь', 
-        id = '#123456', 
-        registrationDate = new Date().toLocaleDateString('ru-RU'),
-        status = 'verified',
-        stats = {
-            turnover: 10000,
-            deals: 150,
-            successRate: 95
-        }
-    } = userData;
+    const [userData, setUserData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    // Функция выхода
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
+    const fetchUserData = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!token || !currentUser) {
+                throw new Error('No token found');
+            }
+
+            console.log('🔄 Загрузка данных пользователя...');
+            
+            // Загружаем основные данные пользователя
+            const userResponse = await fetch('http://localhost:5000/api/user', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!userResponse.ok) {
+                throw new Error(`HTTP ${userResponse.status}`);
+            }
+            
+            const userDataResult = await userResponse.json();
+            
+            // Загружаем реальную статистику
+            const statsResponse = await fetch(`http://localhost:5000/api/user/stats/${currentUser.id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            let statsData = { stats: {} };
+            if (statsResponse.ok) {
+                statsData = await statsResponse.json();
+            }
+
+            // Объединяем данные
+            const completeUserData = {
+                ...userDataResult.user,
+                stats: statsData.stats || { 
+                    totalVolume: 0, 
+                    totalTrades: 0, 
+                    successRate: 0 
+                },
+                fromStorage: false
+            };
+
+            console.log('✅ Данные пользователя:', completeUserData);
+            setUserData(completeUserData);
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('currentUser', JSON.stringify(completeUserData));
+            
+        } catch (error) {
+            console.error('❌ Ошибка загрузки данных:', error);
+            setError('Ошибка загрузки данных');
+            
+            // Пробуем взять данные из localStorage
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                console.log('⚠️ Использую данные из localStorage');
+                const userFromStorage = JSON.parse(savedUser);
+                // Добавляем недостающие поля
+                const userWithDefaults = {
+                    ...userFromStorage,
+                    stats: userFromStorage.stats || { 
+                        totalVolume: 0, 
+                        totalTrades: 0, 
+                        successRate: 0 
+                    },
+                    fromStorage: true
+                };
+                setUserData(userWithDefaults);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleLogout = () => {
+        console.log('🚪 Выход из системы');
+        localStorage.removeItem('token');
         localStorage.removeItem('currentUser');
         localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userPaymentMethods');
-        localStorage.removeItem('userCryptoAddresses');
-        localStorage.removeItem('selectedPaymentMethod');
-        localStorage.removeItem('selectedCryptoAddress');
         navigateTo('welcome');
     };
+
+    if (isLoading) {
+        return (
+            <div className="home-container">
+                <div className="page-header">
+                    <h1>Профиль</h1>
+                </div>
+                <div style={{ 
+                    textAlign: 'center', 
+                    padding: '40px',
+                    color: '#666'
+                }}>
+                    <div>⏳ Загрузка данных...</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error && !userData) {
+        return (
+            <div className="home-container">
+                <div className="page-header">
+                    <h1>Профиль</h1>
+                </div>
+                <div style={{ 
+                    textAlign: 'center', 
+                    padding: '40px',
+                    color: '#ff3b30'
+                }}>
+                    <div>❌ {error}</div>
+                    <button 
+                        onClick={fetchUserData}
+                        style={{
+                            marginTop: '20px',
+                            padding: '10px 20px',
+                            background: '#007cff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Повторить
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="home-container">
             <div className="page-header">
                 <h1>Профиль</h1>
+                <div style={{
+                    fontSize: '14px',
+                    color: '#007cff',
+                    background: 'rgba(0, 124, 255, 0.1)',
+                    padding: '4px 8px',
+                    borderRadius: '6px',
+                    marginTop: '5px'
+                }}>
+                    ID: {userData?.id || 'N/A'}
+                </div>
             </div>
             
             <div className="profile-content">
                 {/* Основная информация пользователя */}
                 <div className="profile-section">
                     <div className="profile-item">
-                        <span className="profile-label">Никнейм</span>
-                        <span className="profile-value">{username}</span>
+                        <span className="profile-label">👤 Никнейм</span>
+                        <span className="profile-value">{userData?.username || 'N/A'}</span>
                     </div>
                     <div className="profile-item">
-                        <span className="profile-label">ID пользователя</span>
-                        <span className="profile-value">{id}</span>
+                        <span className="profile-label">📧 Email</span>
+                        <span className="profile-value">{userData?.email || 'N/A'}</span>
                     </div>
                     <div className="profile-item">
-                        <span className="profile-label">Дата регистрации</span>
-                        <span className="profile-value">{registrationDate}</span>
+                        <span className="profile-label">📅 Дата регистрации</span>
+                        <span className="profile-value">{userData?.registrationDate || 'N/A'}</span>
                     </div>
                     <div className="profile-item">
-                        <span className="profile-label">Статус</span>
+                        <span className="profile-label">🟢 Статус</span>
                         <span className="profile-value verified">Верифицирован</span>
                     </div>
                 </div>
@@ -60,34 +188,34 @@ function Profile({ navigateTo }) {
                 {/* Статистика */}
                 <div className="profile-section">
                     <div className="stats-header">
-                        <h3>Статистика</h3>
-                        <span className="stats-date">{registrationDate}</span>
+                        <h3>📊 Статистика обменов</h3>
+                        <span className="stats-date">Актуально</span>
                     </div>
                     
                     <div className="stats-grid">
                         <div className="stat-item">
-                            <div className="stat-label">Оборот</div>
-                            <div className="stat-value">${stats.turnover.toLocaleString()}</div>
+                            <div className="stat-label">Всего сделок</div>
+                            <div className="stat-value">{userData?.stats?.totalTrades || 0}</div>
                         </div>
                         <div className="stat-item">
-                            <div className="stat-label">Кол-во сделок</div>
-                            <div className="stat-value">{stats.deals}</div>
+                            <div className="stat-label">Успешных</div>
+                            <div className="stat-value">{userData?.stats?.successfulTrades || 0}</div>
                         </div>
                         <div className="stat-item">
-                            <div className="stat-label">Процент</div>
-                            <div className="stat-value">{stats.successRate}%</div>
+                            <div className="stat-label">Успешность</div>
+                            <div className="stat-value">{userData?.stats?.successRate || 0}%</div>
                         </div>
-                    </div>
-
-                    {/* Балансы RUB/USDT */}
-                    <div className="balances-section">
-                        <div className="balance-header">
-                            <span>RUB</span>
-                            <span>USDT</span>
+                        <div className="stat-item">
+                            <div className="stat-label">Общий оборот</div>
+                            <div className="stat-value">{(userData?.stats?.totalVolume || 0).toLocaleString()} ₽</div>
                         </div>
-                        <div className="balance-values">
-                            <span>0</span>
-                            <span>0</span>
+                        <div className="stat-item">
+                            <div className="stat-label">Средняя сумма</div>
+                            <div className="stat-value">{(userData?.stats?.averageAmount || 0).toLocaleString()} ₽</div>
+                        </div>
+                        <div className="stat-item">
+                            <div className="stat-label">Активных сделок</div>
+                            <div className="stat-value">{userData?.stats?.activeTrades || 0}</div>
                         </div>
                     </div>
                 </div>
@@ -98,40 +226,42 @@ function Profile({ navigateTo }) {
                         onClick={handleLogout}
                         className="logout-button"
                     >
-                        Log Out
+                        🚪 Выйти из системы
                     </button>
+                </div>
+
+                {/* Отладочная информация */}
+                <div style={{ 
+                    background: '#f5f5f5', 
+                    padding: '10px', 
+                    borderRadius: '8px', 
+                    marginTop: '10px',
+                    fontSize: '12px',
+                    color: '#666'
+                }}>
+                    <strong>Отладка:</strong> Данные {userData?.fromStorage ? 'из localStorage' : 'с сервера'}
                 </div>
             </div>
 
-            {/* НИЖНЯЯ НАВИГАЦИЯ */}
+            {/* Нижняя навигация */}
             <div className="bottom-nav">
                 <button className="nav-button" onClick={() => navigateTo('home')}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 7v6h2V9h-2zm1 11c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#858589"/>
-                        <path d="M11 7h2v6h-2z" fill="#858589"/>
-                    </svg>
+                    <span>🏠</span>
                     <span>Обмен</span>
                 </button>
                 
                 <button className="nav-button active">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="#007CFF"/>
-                    </svg>
+                    <span>👤</span>
                     <span>Профиль</span>
                 </button>
                 
                 <button className="nav-button" onClick={() => navigateTo('history')}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path fillRule="evenodd" clipRule="evenodd" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="#858589"/>
-                        <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="#858589"/>
-                    </svg>
+                    <span>📊</span>
                     <span>История</span>
                 </button>
                 
                 <button className="nav-button" onClick={() => navigateTo('help')}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                        <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" fill="#858589"/>
-                    </svg>
+                    <span>❓</span>
                     <span>Справка</span>
                 </button>
             </div>

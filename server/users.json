@@ -1,0 +1,183 @@
+[
+  {
+    "id": "1",
+    "username": "admin",
+    "password": "admin123",
+    "email": "admin@tetherbot.com",
+    "registrationDate": "2024-01-15",
+    "stats": {
+      "totalTrades": 45,
+      "totalVolume": 125000,
+      "successRate": 98
+    },
+    "balance": {
+      "rub": 50000,
+      "usdt": 1500
+    },
+    "banned": false
+  },
+  {
+    "id": "2",
+    "username": "user1",
+    "password": "user123",
+    "email": "user1@tetherbot.com",
+    "registrationDate": "2024-01-20",
+    "stats": {
+      "totalTrades": 12,
+      "totalVolume": 35000,
+      "successRate": 100
+    },
+    "balance": {
+      "rub": 15000,
+      "usdt": 500
+    },
+    "banned": true,
+    "banReason": "недобросовестное_поведение",
+    "banDate": "02.11.2025"
+  },
+  {
+    "id": "USER_TEST",
+    "username": "test",
+    "password": "test",
+    "email": "test@tetherbot.com",
+    "registrationDate": "2025-11-04T13:49:02.848Z",
+    "balance": {
+      "rub": 50000,
+      "usdt": 500
+    },
+    "stats": {
+      "totalTrades": 5,
+      "totalVolume": 25000,
+      "successRate": 80
+    },
+    "isVerified": true
+  },
+  {
+    "id": "USER1762270342620",
+    "username": "grghr",
+    "password": "hrhrrhhr",
+    "email": "grghr@tetherbot.com",
+    "registrationDate": "2025-11-04T15:32:22.620Z",
+    "balance": {
+      "rub": 10000,
+      "usdt": 100
+    },
+    "stats": {
+      "totalTrades": 0,
+      "totalVolume": 0,
+      "successRate": 0
+    },
+    "isVerified": true
+  },
+  {
+    "id": "USER1762333597129",
+    "username": "dfg",
+    "password": "erty",
+    "email": "dfg@tetherbot.com",
+    "registrationDate": "2025-11-05T09:06:37.129Z",
+    "balance": {
+      "rub": 10000,
+      "usdt": 100
+    },
+    "stats": {
+      "totalTrades": 0,
+      "totalVolume": 0,
+      "successRate": 0
+    },
+    "isVerified": true
+  },
+  {
+    "id": "USER1762336896492",
+    "username": "варо",
+    "password": "варо",
+    "email": "варо@tetherbot.com",
+    "registrationDate": "2025-11-05T10:01:36.492Z",
+    "balance": {
+      "rub": 10000,
+      "usdt": 100
+    },
+    "stats": {
+      "totalTrades": 0,
+      "totalVolume": 0,
+      "successRate": 0
+    },
+    "isVerified": true
+  },
+  {
+    "id": "USER1762340933123",
+    "username": "111",
+    "password": "111",
+    "email": "111@tetherbot.com",
+    "registrationDate": "2025-11-05T11:08:53.123Z",
+    "balance": {
+      "rub": 10000,
+      "usdt": 100
+    },
+    "stats": {
+      "totalTrades": 0,
+      "totalVolume": 0,
+      "successRate": 0
+    },
+    "isVerified": true
+  },
+  {
+    "id": "USER1762359906339",
+    "username": "123",
+    "password": "123",
+    "email": "123@tetherbot.com",
+    "registrationDate": "2025-11-05T16:25:06.339Z",
+    "balance": {
+      "rub": 10000,
+      "usdt": 100
+    },
+    "stats": {
+      "totalTrades": 0,
+      "totalVolume": 0,
+      "successRate": 0
+    },
+    "isVerified": true
+  },
+  {
+    "id": "USER1762362113954",
+    "username": "1234",
+    "password": "1234",
+    "email": "1234@tetherbot.com",
+    "registrationDate": "2025-11-05T17:01:53.954Z",
+    "balance": {
+      "rub": 10000,
+      "usdt": 100
+    },
+    "stats": {
+      "totalTrades": 0,
+      "totalVolume": 0,
+      "successRate": 0
+    },
+    "isVerified": true
+  },
+  {
+    "id": "USER1762367504343",
+    "username": "12342",
+    "password": "1231232",
+    "email": "12342@tetherbot.com",
+    "registrationDate": "2025-11-05T18:31:44.343Z",
+    "stats": {
+      "totalTrades": 0,
+      "totalVolume": 0,
+      "successRate": 0
+    },
+    "isVerified": true
+  },
+  {
+    "id": "USER1762462722234",
+    "username": "login",
+    "password": "kigin",
+    "email": "login@tetherbot.com",
+    "registrationDate": "2025-11-06T20:58:42.234Z",
+    "stats": {
+      "totalTrades": 0,
+      "totalVolume": 0,
+      "successRate": 0
+    },
+    "isVerified": true
+  }
+]
