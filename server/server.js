@@ -1,25 +1,24 @@
 // server.js
 const express = require('express');
-const cors = require('cors');
+// const cors = require('cors');  // ЗАКОММЕНТИРУЙ ЭТУ СТРОКУ
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Лимиты и таймауты
-const MIN_RUB = 1000;
-const MAX_RUB = 1000000;
-const MIN_USDT = 10;
-const MAX_USDT = 10000;
-const ORDER_TIMEOUT_MINUTES = 15;
-
 // Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
+// app.use(cors());  // ЗАКОММЕНТИРУЙ ЭТУ СТРОКУ
 
-// Файлы для хранения данных
+// Добавь простой CORS вместо cors модуля
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  next();
+});
+
+app.use(express.json());
 const USERS_FILE = './users.json';
 const ORDERS_FILE = './orders.json';
 const SETTINGS_FILE = './settings.json';
