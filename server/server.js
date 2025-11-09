@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT 
 
 // ==================== НАСТРОЙКИ TELEGRAM ====================
 const TELEGRAM_BOT_TOKEN = '7950211944:AAGwDmV_XcS8K2nADlX2HoAkf9fTemcN-pI';
@@ -2411,14 +2411,12 @@ app.get('/', (req, res) => {
 
 // ==================== ЗАПУСК СЕРВЕРА И БОТА ====================
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     initializeDataFiles();
     console.log('=== ЗАПУСК TETHERBOT SERVER ===');
     console.log(`🚀 Сервер запущен на порту ${PORT}`);
-    console.log(`📊 API доступно по http://localhost:${PORT}`);
+    console.log(`📊 API доступно по https://tgbot-l516.onrender.com`);
     console.log(`🤖 Telegram бот: ✅ ЗАПУЩЕН И РАБОТАЕТ`);
-    console.log(`💳 Система отправки реквизитов администратору: ✅ АКТИВНА`);
-    console.log(`🔗 Бот готов принимать команды: /start`);
 });
 
 console.log('✅ Telegram бот инициализирован!');
