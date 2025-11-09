@@ -11,13 +11,35 @@ const PORT = process.env.PORT
 const TELEGRAM_BOT_TOKEN = '7950211944:AAGwDmV_XcS8K2nADlX2HoAkf9fTemcN-pI';
 const ADMIN_CHAT_ID = '7879866656';
 
-// ==================== MIDDLEWARE ====================
+// ==================== CORS MIDDLEWARE ====================
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  next();
-});
+    const allowedOrigins = [
+      'https://ваш-сайт.netlify.app', // ЗАМЕНИ НА СВОЙ NETLIFY URL
+      'http://localhost:3000', 
+      'https://web.telegram.org',
+      'https://telegram.org'
+    ];
+    
+    const origin = req.headers.origin;
+    console.log('🔄 CORS request from:', origin);
+    
+    if (allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+    } else {
+      res.header('Access-Control-Allow-Origin', '*');
+    }
+    
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, *');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    
+    if (req.method === 'OPTIONS') {
+      console.log('✅ CORS preflight OK');
+      return res.status(200).end();
+    }
+    
+    next();
+  });
 
 app.use(express.json());
 
