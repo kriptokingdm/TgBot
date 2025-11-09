@@ -232,7 +232,7 @@ async function showSystemControl(chatId) {
         const quietHoursActive = isQuietHours(settings);
         
         const exchangeStatus = settings.exchangeEnabled ? '🟢 ВКЛЮЧЕН' : '🔴 ВЫКЛЮЧЕН';
-        const quietHoursStatus = settings.quietHours.enabled ? '🟢 ВКЛЮЧЕН' : '🔴 ВЫКЛЮЧЕН';
+        const quietHoursStatus = settings.quietHours.enabled ? '🟢 ВКЛЮЧЕН' : '🔴 ВЫКЛЮЧEN';
         const quietHoursActiveStatus = quietHoursActive ? '🔴 АКТИВЕН' : '🟢 НЕАКТИВЕН';
         
         const message = `🎛️ <b>УПРАВЛЕНИЕ СИСТЕМОЙ</b>\n\n` +
@@ -1063,7 +1063,7 @@ function getStatusText(status) {
     return statusMap[status] || status;
 }
 
-// ==================== СЕРВЕРНЫЕ ФУНКЦИИ (ОСТАВЛЯЕМ ИЗ ПРЕДЫДУЩЕГО ФАЙЛА) ====================
+// ==================== СЕРВЕРНЫЕ ФУНКЦИИ ====================
 
 function initializeDataFiles() {
     const files = [
@@ -1182,7 +1182,7 @@ function calculateRates(amount, settings) {
     };
 }
 
-// ==================== API ENDPOINTS (ОСТАВЛЯЕМ ИЗ ПРЕДЫДУЩЕГО ФАЙЛА) ====================
+// ==================== API ENDPOINTS ====================
 
 app.get('/api/health', (req, res) => {
     res.json({ 
@@ -1216,8 +1216,1198 @@ app.get('/api/exchange-rate', (req, res) => {
     }
 });
 
-// ... (ВСЕ ОСТАЛЬНЫЕ API ENDPOINTS ИЗ ПРЕДЫДУЩЕГО server.js ФАЙЛА)
-// ВСТАВЬТЕ СЮДА ВСЕ ОСТАВШИЕСЯ API ENDPOINTS ИЗ ВАШЕГО ИСХОДНОГО server.js
+app.post('/api/register', async (req, res) => {
+    try {
+        const { username, password, email } = req.body;
+
+        if (!username || !password) {
+            return res.json({
+                success: false,
+                error: 'Заполните все поля'
+            });
+        }
+
+        const users = readData(USERS_FILE) || [];
+        
+        const existingUser = users.find(u => u.username === username);
+        if (existingUser) {
+            return res.json({
+                success: false,
+                error: 'Пользователь уже существует'
+            });
+        }
+
+        const newUser = {
+            id: `USER${Date.now()}`,
+            username: username,
+            password: password,
+            email: email || `${username}@tetherbot.com`,
+            registrationDate: new Date().toISOString(),
+            stats: {
+                totalTrades: 0,
+                totalVolume: 0,
+                successRate: 0
+            },
+            isVerified: true
+        };
+
+        users.push(newUser);
+        writeData(USERS_FILE, users);
+
+        const token = Buffer.from(`${username}:${Date.now()}`).toString('base64');
+
+        res.json({
+            success: true,
+            user: newUser,
+            token: token,
+            message: 'Регистрация успешна'
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка регистрации'
+        });
+    }
+});
+
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        if (!username || !password) {
+            return res.json({
+                success: false,
+                error: 'Заполните все поля'
+            });
+        }
+
+        const users = readData(USERS_FILE) || [];
+        const user = users.find(u => u.username === username && u.password === password);
+
+        if (!user) {
+            return res.json({
+                success: false,
+                error: 'Неверный логин или пароль'
+            });
+        }
+
+        const token = Buffer.from(`${username}:${Date.now()}`).toString('base64');
+
+        res.json({
+            success: true,
+            user: user,
+            token: token,
+            message: 'Авторизация успешна'
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка авторизации'
+        });
+    }
+});
+
+app.get('/api/user/stats/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        
+        const orders = readData(ORDERS_FILE) || [];
+        const userOrders = orders.filter(order => order.userId === userId);
+        
+        const completedOrders = userOrders.filter(order => order.status === 'completed');
+        const pendingOrders = userOrders.filter(order => order.status === 'pending' || order.status === 'paid');
+        const cancelledOrders = userOrders.filter(order => order.status === 'cancelled');
+        
+        const totalTrades = userOrders.length;
+        const successfulTrades = completedOrders.length;
+        
+        const successRate = totalTrades > 0 
+            ? Math.round((successfulTrades / totalTrades) * 100)
+            : 0;
+        
+        const totalVolume = completedOrders.reduce((sum, order) => {
+            if (order.type === 'buy') {
+                return sum + order.amount;
+            } else {
+                return sum + (order.amount * order.rate);
+            }
+        }, 0);
+        
+        const averageAmount = successfulTrades > 0 
+            ? Math.round(totalVolume / successfulTrades)
+            : 0;
+        
+        const activeTrades = pendingOrders.length;
+
+        res.json({
+            success: true,
+            stats: {
+                totalTrades,
+                successfulTrades,
+                successRate,
+                totalVolume,
+                averageAmount,
+                activeTrades,
+                cancelledTrades: cancelledOrders.length
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Ошибка загрузки статистики:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка загрузки статистики'
+        });
+    }
+});
+
+app.get('/api/user', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.replace('Bearer ', '');
+        
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                error: 'Токен не предоставлен'
+            });
+        }
+
+        const users = readData(USERS_FILE) || [];
+        const [username] = Buffer.from(token, 'base64').toString().split(':');
+        const user = users.find(u => u.username === username);
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                error: 'Неверный токен'
+            });
+        }
+
+        res.json({
+            success: true,
+            user: user
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка загрузки пользователя'
+        });
+    }
+});
+
+app.post('/api/create-order', async (req, res) => {
+    try {
+        const { type, amount, rate, userId, paymentMethod, cryptoAddress } = req.body;
+        
+        console.log('🔄 CREATE ORDER - Входные данные:', { 
+            type, 
+            amount, 
+            rate, 
+            userId,
+            paymentMethod,
+            cryptoAddress
+        });
+
+        // ПРОВЕРКА ДОСТУПНОСТИ ОБМЕНА
+        const settings = getCurrentSettings();
+        
+        if (!settings.exchangeEnabled) {
+            return res.status(403).json({
+                success: false,
+                error: '❌ Обмен временно приостановлен администратором. Пожалуйста, попробуйте позже.'
+            });
+        }
+
+        if (isQuietHours(settings)) {
+            const quietMessage = `⏰ <b>ТИХИЙ ЧАС АКТИВЕН</b>\n\n` +
+                               `🕒 Время: ${settings.quietHours.startTime} - ${settings.quietHours.endTime}\n` +
+                               `📋 Создание заявок временно приостановлено\n` +
+                               `🔄 Сервис возобновит работу в ${settings.quietHours.endTime}`;
+            return res.status(403).json({
+                success: false,
+                error: quietMessage
+            });
+        }
+
+        if (!type || !amount || !rate || !userId) {
+            return res.status(400).json({
+                success: false,
+                error: 'Не все обязательные поля заполнены'
+            });
+        }
+
+        if (type !== 'buy' && type !== 'sell') {
+            return res.status(400).json({
+                success: false,
+                error: 'Неверный тип заявки'
+            });
+        }
+
+        const numAmount = parseFloat(amount);
+        const numRate = parseFloat(rate);
+        
+        if (isNaN(numAmount) || numAmount <= 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Неверная сумма'
+            });
+        }
+
+        if (isNaN(numRate) || numRate <= 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'Неверный курс'
+            });
+        }
+
+        // Проверка лимитов
+        if (type === 'buy') {
+            if (numAmount < MIN_RUB) {
+                return res.status(400).json({
+                    success: false,
+                    error: `Минимальная сумма для покупки: ${MIN_RUB.toLocaleString()} RUB`
+                });
+            }
+            if (numAmount > MAX_RUB) {
+                return res.status(400).json({
+                    success: false,
+                    error: `Максимальная сумма для покупки: ${MAX_RUB.toLocaleString()} RUB`
+                });
+            }
+        } else {
+            const rubAmount = numAmount * numRate;
+            if (numAmount < MIN_USDT) {
+                return res.status(400).json({
+                    success: false,
+                    error: `Минимальная сумма для продажи: ${MIN_USDT} USDT (≈${MIN_RUB.toLocaleString()} RUB)`
+                });
+            }
+            if (numAmount > MAX_USDT) {
+                return res.status(400).json({
+                    success: false,
+                    error: `Максимальная сумма для продажи: ${MAX_USDT} USDT (≈${MAX_RUB.toLocaleString()} RUB)`
+                });
+            }
+        }
+
+        const users = readData(USERS_FILE) || [];
+        const user = users.find(u => u.id === userId || u.username === userId);
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                error: 'Пользователь не найден'
+            });
+        }
+
+        const orderId = `ORD${Date.now()}${Math.random().toString(36).substr(2, 5)}`.toUpperCase();
+        
+        const newOrder = {
+            id: orderId,
+            type: type,
+            amount: numAmount,
+            rate: numRate,
+            userId: user.id,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            },
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            paymentMethod: paymentMethod || null,
+            cryptoAddress: cryptoAddress || null,
+            expiresAt: new Date(Date.now() + ORDER_TIMEOUT_MINUTES * 60 * 1000).toISOString(),
+            messages: [
+                {
+                    id: 1,
+                    text: type === 'buy' 
+                        ? `Хочу купить ${numAmount} USDT за RUB` 
+                        : `Хочу продать ${numAmount} USDT за RUB`,
+                    type: 'user',
+                    timestamp: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    text: `⏰ Время на выполнение: ${ORDER_TIMEOUT_MINUTES} минут. Заявка будет автоматически отменена по истечении времени.`,
+                    type: 'system',
+                    timestamp: new Date().toISOString()
+                }
+            ]
+        };
+
+        console.log('✅ Создана заявка:', {
+            id: newOrder.id,
+            type: newOrder.type,
+            amount: newOrder.amount,
+            user: newOrder.user.username
+        });
+
+        let orders = readData(ORDERS_FILE) || [];
+        orders.push(newOrder);
+        
+        const writeSuccess = writeData(ORDERS_FILE, orders);
+        if (!writeSuccess) {
+            return res.status(500).json({
+                success: false,
+                error: 'Ошибка сохранения заявки'
+            });
+        }
+
+        console.log('✅ Заявка сохранена в базу');
+
+        // ==================== ОТПРАВКА УВЕДОМЛЕНИЯ С РЕКВИЗИТАМИ ====================
+        try {
+            const typeText = type === 'buy' ? '🟢 ПОКУПКА' : '🔴 ПРОДАЖА';
+            
+            // Формируем сообщение с реквизитами
+            let requisitesText = '';
+            
+            if (type === 'buy') {
+                // Покупка - показываем крипто-адрес
+                if (cryptoAddress) {
+                    requisitesText = `💳 <b>КРИПТО-АДРЕС ДЛЯ ПОЛУЧЕНИЯ:</b>\n` +
+                                   `📝 Название: ${cryptoAddress.name}\n` +
+                                   `🔗 Адрес: <code>${cryptoAddress.address}</code>\n` +
+                                   `⛓️ Сеть: ${cryptoAddress.network}`;
+                } else {
+                    requisitesText = `⚠️ <b>КРИПТО-АДРЕС НЕ УКАЗАН</b>`;
+                }
+            } else {
+                // Продажа - показываем банковские реквизиты
+                if (paymentMethod) {
+                    if (paymentMethod.type === 'sbp') {
+                        requisitesText = `💳 <b>РЕКВИЗИТЫ СБП ДЛЯ ОПЛАТЫ:</b>\n` +
+                                       `🏦 Банк: ${paymentMethod.name}\n` +
+                                       `📱 Телефон: <code>${paymentMethod.fullNumber || paymentMethod.number}</code>`;
+                    } else {
+                        requisitesText = `💳 <b>БАНКОВСКИЕ РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ:</b>\n` +
+                                       `🏦 Банк: ${paymentMethod.name}\n` +
+                                       `💳 Карта: <code>${paymentMethod.fullNumber || '•••• ' + paymentMethod.number}</code>`;
+                    }
+                } else {
+                    requisitesText = `⚠️ <b>БАНКОВСКИЕ РЕКВИЗИТЫ НЕ УКАЗАНЫ</b>`;
+                }
+            }
+
+            const message = `🔥 <b>НОВАЯ ЗАЯВКА #${orderId}</b>\n\n` +
+                          `${typeText} USDT\n` +
+                          `💰 Сумма: ${numAmount} ${type === 'buy' ? 'RUB' : 'USDT'}\n` +
+                          `💱 Курс: ${rate} RUB\n` +
+                          `🎯 Получает: ${type === 'buy' ? (numAmount / rate).toFixed(2) + ' USDT' : (numAmount * rate).toFixed(2) + ' RUB'}\n` +
+                          `👤 Клиент: ${user.username}\n` +
+                          `📧 Email: ${user.email || 'Не указан'}\n` +
+                          `🆔 ID: #${orderId}\n\n` +
+                          `${requisitesText}\n\n` +
+                          `⏰ Время: ${new Date().toLocaleTimeString('ru-RU')}`;
+            
+            await sendTelegramNotification(message);
+            console.log('✅ Реквизиты отправлены администратору');
+        } catch (telegramError) {
+            console.error('❌ Ошибка отправки уведомления с реквизитами:', telegramError);
+        }
+
+        res.json({
+            success: true,
+            order: newOrder,
+            message: 'Заявка создана успешно'
+        });
+
+    } catch (error) {
+        console.error('❌ Ошибка создания заявки:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Внутренняя ошибка сервера: ' + error.message
+        });
+    }
+});
+
+app.get('/api/chat/:orderId', (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const orders = readData(ORDERS_FILE) || [];
+        const order = orders.find(o => o.id === orderId);
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                error: 'Chat not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            orderId: orderId,
+            messages: order.messages || [],
+            exchangeData: {
+                type: order.type,
+                amount: order.amount,
+                rate: order.rate
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка загрузки чата'
+        });
+    }
+});
+
+app.post('/api/chat/send', async (req, res) => {
+    try {
+        const { orderId, message, type = 'user' } = req.body;
+        
+        const orders = readData(ORDERS_FILE) || [];
+        const orderIndex = orders.findIndex(o => o.id === orderId);
+
+        if (orderIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                error: 'Chat not found'
+            });
+        }
+
+        if (!orders[orderIndex].messages) {
+            orders[orderIndex].messages = [];
+        }
+
+        const newMessage = {
+            id: orders[orderIndex].messages.length + 1,
+            text: message,
+            type: type,
+            timestamp: new Date().toISOString()
+        };
+
+        orders[orderIndex].messages.push(newMessage);
+        writeData(ORDERS_FILE, orders);
+
+        // ОТПРАВКА УВЕДОМЛЕНИЯ В ТЕЛЕГРАМ ПРИ СООБЩЕНИИ ОТ КЛИЕНТА
+        if (type === 'user') {
+            try {
+                const order = orders[orderIndex];
+                const notification = `💬 <b>НОВОЕ СООБЩЕНИЕ ОТ КЛИЕНТА</b>\n\n` +
+                                   `📋 Заявка: #${orderId}\n` +
+                                   `👤 От: ${order.user?.username || 'Клиент'}\n` +
+                                   `💬 Сообщение: ${message}\n\n` +
+                                   `⏰ ${new Date().toLocaleTimeString('ru-RU')}`;
+                
+                await sendTelegramNotification(notification);
+            } catch (telegramError) {
+                console.error('❌ Ошибка отправки уведомления о сообщении:', telegramError);
+            }
+        }
+
+        res.json({
+            success: true,
+            message: newMessage
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка отправки сообщения'
+        });
+    }
+});
+
+app.get('/api/user/orders', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.replace('Bearer ', '');
+        
+        if (!token) {
+            return res.status(401).json({ 
+                success: false, 
+                error: 'Токен не предоставлен' 
+            });
+        }
+
+        let username;
+        try {
+            const decoded = Buffer.from(token, 'base64').toString('utf8');
+            username = decoded.split(':')[0];
+        } catch (decodeError) {
+            return res.status(401).json({ 
+                success: false, 
+                error: 'Неверный формат токена' 
+            });
+        }
+
+        const users = readData(USERS_FILE) || [];
+        const user = users.find(u => u.username === username);
+        
+        if (!user) {
+            return res.status(401).json({ 
+                success: false, 
+                error: 'Пользователь не найден' 
+            });
+        }
+
+        const orders = readData(ORDERS_FILE) || [];
+        const userOrders = orders.filter(order => {
+            return order.userId === user.id;
+        });
+
+        const sortedOrders = userOrders.sort((a, b) => 
+            new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        res.json({
+            success: true,
+            orders: sortedOrders
+        });
+
+    } catch (error) {
+        console.error('❌ Ошибка загрузки истории:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка загрузки истории'
+        });
+    }
+});
+
+app.get('/api/settings', (req, res) => {
+    try {
+        const settings = getCurrentSettings();
+        res.json({
+            success: true,
+            settings: settings
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка загрузки настроек'
+        });
+    }
+});
+
+app.post('/api/settings/update', (req, res) => {
+    try {
+        const { baseRate, spread, tiers, updatedBy } = req.body;
+        
+        const newSettings = {};
+        if (baseRate !== undefined) newSettings.baseRate = parseFloat(baseRate);
+        if (spread !== undefined) newSettings.spread = parseFloat(spread);
+        if (tiers !== undefined) newSettings.tiers = tiers;
+        if (updatedBy) newSettings.updatedBy = updatedBy;
+
+        const success = updateSettings(newSettings);
+
+        if (success) {
+            const updatedSettings = getCurrentSettings();
+            res.json({
+                success: true,
+                message: 'Настройки обновлены',
+                settings: updatedSettings
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                error: 'Ошибка сохранения настроек'
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка обновления настроек'
+        });
+    }
+});
+
+// ==================== АДМИН ENDPOINTS ====================
+
+app.get('/api/admin/chats', (req, res) => {
+    try {
+        const orders = readData(ORDERS_FILE) || [];
+        const activeChats = orders.map(order => ({
+            orderId: order.id,
+            exchangeData: {
+                type: order.type,
+                amount: order.amount,
+                currency: order.type === 'buy' ? 'RUB' : 'USDT'
+            },
+            messageCount: order.messages ? order.messages.length : 0,
+            status: order.status,
+            lastActivity: order.messages && order.messages.length > 0 
+                ? order.messages[order.messages.length - 1].timestamp 
+                : order.createdAt
+        }));
+
+        res.json({
+            success: true,
+            chats: activeChats
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.get('/api/admin/order/:orderId', (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const orders = readData(ORDERS_FILE) || [];
+        const order = orders.find(o => o.id === orderId);
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                error: 'Order not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            order: order
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// ==================== УПРАВЛЕНИЕ СИСТЕМОЙ ====================
+
+app.get('/api/admin/system-status', (req, res) => {
+    try {
+        const settings = getCurrentSettings();
+        const quietHoursActive = isQuietHours(settings);
+        
+        res.json({
+            success: true,
+            status: {
+                exchangeEnabled: settings.exchangeEnabled !== undefined ? settings.exchangeEnabled : true,
+                quietHours: settings.quietHours || { enabled: false, startTime: "23:00", endTime: "08:00" },
+                quietHoursActive: quietHoursActive,
+                baseRate: settings.baseRate,
+                spread: settings.spread,
+                lastUpdated: settings.lastUpdated
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/admin/toggle-exchange', (req, res) => {
+    try {
+        const { enabled } = req.body;
+        
+        const success = updateSettings({
+            exchangeEnabled: enabled,
+            updatedBy: 'admin'
+        });
+
+        if (success) {
+            res.json({
+                success: true,
+                message: enabled ? '✅ Обмен включен' : '⏸️ Обмен приостановлен',
+                exchangeEnabled: enabled
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                error: 'Ошибка обновления настроек'
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/admin/toggle-quiet-hours', (req, res) => {
+    try {
+        const { enabled, startTime, endTime } = req.body;
+        const settings = getCurrentSettings();
+        
+        const quietHours = {
+            enabled: enabled,
+            startTime: startTime || (settings.quietHours ? settings.quietHours.startTime : '23:00'),
+            endTime: endTime || (settings.quietHours ? settings.quietHours.endTime : '08:00')
+        };
+        
+        const success = updateSettings({
+            quietHours: quietHours,
+            updatedBy: 'admin'
+        });
+
+        if (success) {
+            res.json({
+                success: true,
+                message: enabled ? 
+                    `✅ Тихий час включен (${quietHours.startTime} - ${quietHours.endTime})` : 
+                    '✅ Тихий час выключен',
+                quietHours: quietHours
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                error: 'Ошибка обновления настроек'
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/admin/send-message', async (req, res) => {
+    try {
+        const { orderId, message, type = 'support' } = req.body;
+        const orders = readData(ORDERS_FILE) || [];
+        const orderIndex = orders.findIndex(o => o.id === orderId);
+
+        if (orderIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                error: 'Order not found'
+            });
+        }
+
+        if (!orders[orderIndex].messages) {
+            orders[orderIndex].messages = [];
+        }
+
+        const newMessage = {
+            id: orders[orderIndex].messages.length + 1,
+            text: message,
+            type: type,
+            timestamp: new Date().toISOString()
+        };
+
+        orders[orderIndex].messages.push(newMessage);
+        writeData(ORDERS_FILE, orders);
+
+        res.json({
+            success: true,
+            message: newMessage
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/admin/mark-paid', async (req, res) => {
+    try {
+        const { orderId } = req.body;
+        const orders = readData(ORDERS_FILE) || [];
+        const orderIndex = orders.findIndex(o => o.id === orderId);
+
+        if (orderIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                error: 'Order not found'
+            });
+        }
+
+        orders[orderIndex].status = 'paid';
+        orders[orderIndex].paidAt = new Date().toISOString();
+        
+        const systemMessage = {
+            id: orders[orderIndex].messages.length + 1,
+            text: '✅ Оператор подтвердил оплату. Средства будут зачислены в ближайшее время.',
+            type: 'system',
+            timestamp: new Date().toISOString()
+        };
+        orders[orderIndex].messages.push(systemMessage);
+        
+        writeData(ORDERS_FILE, orders);
+
+        // Уведомление в телеграм
+        try {
+            const order = orders[orderIndex];
+            const message = `💰 <b>ОПЛАТА ПОДТВЕРЖДЕНА</b>\n\n` +
+                          `📋 Заявка: #${orderId}\n` +
+                          `👤 Клиент: ${order.user?.username || 'Неизвестно'}\n` +
+                          `💵 Сумма: ${order.amount} ${order.type === 'buy' ? 'RUB' : 'USDT'}\n` +
+                          `⏰ Время: ${new Date().toLocaleTimeString('ru-RU')}`;
+            
+            await sendTelegramNotification(message);
+        } catch (telegramError) {
+            console.error('❌ Ошибка отправки уведомления:', telegramError);
+        }
+
+        res.json({
+            success: true,
+            order: orders[orderIndex]
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/admin/complete-order', async (req, res) => {
+    try {
+        const { orderId, comment } = req.body;
+        
+        const orders = readData(ORDERS_FILE) || [];
+        const orderIndex = orders.findIndex(o => o.id === orderId);
+
+        if (orderIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                error: 'Order not found'
+            });
+        }
+
+        orders[orderIndex].status = 'completed';
+        orders[orderIndex].completedAt = new Date().toISOString();
+        orders[orderIndex].comment = comment;
+        
+        if (!orders[orderIndex].messages) {
+            orders[orderIndex].messages = [];
+        }
+        
+        const systemMessage = {
+            id: orders[orderIndex].messages.length + 1,
+            text: '🎉 Сделка завершена! Средства зачислены.',
+            type: 'system',
+            timestamp: new Date().toISOString()
+        };
+        
+        orders[orderIndex].messages.push(systemMessage);
+
+        writeData(ORDERS_FILE, orders);
+
+        // Уведомление в телеграм
+        try {
+            const order = orders[orderIndex];
+            const message = `✅ <b>ЗАЯВКА ЗАВЕРШЕНА</b>\n\n` +
+                          `📋 Заявка: #${orderId}\n` +
+                          `👤 Клиент: ${order.user?.username || 'Неизвестно'}\n` +
+                          `💵 Сумма: ${order.amount} ${order.type === 'buy' ? 'RUB' : 'USDT'}\n` +
+                          `💬 Комментарий: ${comment || 'Без комментария'}\n` +
+                          `⏰ Время: ${new Date().toLocaleTimeString('ru-RU')}`;
+            
+            await sendTelegramNotification(message);
+        } catch (telegramError) {
+            console.error('❌ Ошибка отправки уведомления:', telegramError);
+        }
+
+        res.json({
+            success: true,
+            order: orders[orderIndex]
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.post('/api/admin/cancel-order', async (req, res) => {
+    try {
+        const { orderId, reason } = req.body;
+        const orders = readData(ORDERS_FILE) || [];
+        const orderIndex = orders.findIndex(o => o.id === orderId);
+
+        if (orderIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                error: 'Order not found'
+            });
+        }
+
+        orders[orderIndex].status = 'cancelled';
+        orders[orderIndex].cancelledAt = new Date().toISOString();
+        orders[orderIndex].cancelReason = reason;
+        
+        const systemMessage = {
+            id: orders[orderIndex].messages.length + 1,
+            text: `❌ Оператор отменил заявку. Причина: ${reason}`,
+            type: 'system',
+            timestamp: new Date().toISOString()
+        };
+        orders[orderIndex].messages.push(systemMessage);
+        
+        writeData(ORDERS_FILE, orders);
+
+        // Уведомление в телеграм
+        try {
+            const order = orders[orderIndex];
+            const message = `❌ <b>ЗАЯВКА ОТМЕНЕНА</b>\n\n` +
+                          `📋 Заявка: #${orderId}\n` +
+                          `👤 Клиент: ${order.user?.username || 'Неизвестно'}\n` +
+                          `💵 Сумма: ${order.amount} ${order.type === 'buy' ? 'RUB' : 'USDT'}\n` +
+                          `📝 Причина: ${reason}\n` +
+                          `⏰ Время: ${new Date().toLocaleTimeString('ru-RU')}`;
+            
+            await sendTelegramNotification(message);
+        } catch (telegramError) {
+            console.error('❌ Ошибка отправки уведомления:', telegramError);
+        }
+
+        res.json({
+            success: true,
+            order: orders[orderIndex]
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.get('/api/admin/stats', (req, res) => {
+    try {
+        const orders = readData(ORDERS_FILE) || [];
+        const totalOrders = orders.length;
+        const pendingOrders = orders.filter(o => o.status === 'pending').length;
+        const completedOrders = orders.filter(o => o.status === 'completed').length;
+        const cancelledOrders = orders.filter(o => o.status === 'cancelled').length;
+
+        res.json({
+            success: true,
+            stats: {
+                total: totalOrders,
+                pending: pendingOrders,
+                completed: completedOrders,
+                cancelled: cancelledOrders,
+                completionRate: totalOrders > 0 ? (completedOrders / totalOrders * 100).toFixed(1) : 0
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// ==================== DEBUG ENDPOINTS ====================
+
+app.get('/api/debug/orders', (req, res) => {
+    try {
+        const orders = readData(ORDERS_FILE) || [];
+        res.json({
+            success: true,
+            total: orders.length,
+            orders: orders.map(o => ({
+                id: o.id,
+                type: o.type,
+                amount: o.amount,
+                status: o.status,
+                userId: o.userId,
+                user: o.user,
+                createdAt: o.createdAt,
+                messages: o.messages ? o.messages.length : 0
+            }))
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+app.get('/api/debug/users', (req, res) => {
+    try {
+        const users = readData(USERS_FILE) || [];
+        res.json({
+            success: true,
+            users: users.map(u => ({
+                id: u.id,
+                username: u.username,
+                email: u.email,
+                registrationDate: u.registrationDate
+            }))
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.post('/api/create-test-data', (req, res) => {
+    try {
+        const users = readData(USERS_FILE) || [];
+        const orders = readData(ORDERS_FILE) || [];
+
+        if (!users.find(u => u.username === 'test')) {
+            const testUser = {
+                id: 'USER_TEST',
+                username: 'test',
+                password: 'test',
+                email: 'test@tetherbot.com',
+                registrationDate: new Date().toISOString(),
+                stats: {
+                    totalTrades: 5,
+                    totalVolume: 25000,
+                    successRate: 80
+                },
+                isVerified: true
+            };
+            users.push(testUser);
+            writeData(USERS_FILE, users);
+        }
+
+        if (orders.length === 0) {
+            const testOrders = [
+                {
+                    id: 'TEST001',
+                    type: 'buy',
+                    amount: 5000,
+                    rate: 92.5,
+                    status: 'completed',
+                    userId: 'USER_TEST',
+                    user: {
+                        id: 'USER_TEST',
+                        username: 'test',
+                        email: 'test@tetherbot.com'
+                    },
+                    createdAt: new Date().toISOString(),
+                    completedAt: new Date().toISOString(),
+                    cryptoAddress: {
+                        network: 'TRC20',
+                        address: 'TEst12345678901234567890'
+                    },
+                    messages: [
+                        {
+                            id: 1,
+                            text: 'Хочу купить 5000 USDT за RUB',
+                            type: 'user',
+                            timestamp: new Date().toISOString()
+                        }
+                    ]
+                },
+                {
+                    id: 'TEST002',
+                    type: 'sell',
+                    amount: 100,
+                    rate: 87.5,
+                    status: 'pending',
+                    userId: 'USER_TEST',
+                    user: {
+                        id: 'USER_TEST',
+                        username: 'test',
+                        email: 'test@tetherbot.com'
+                    },
+                    createdAt: new Date(Date.now() - 3600000).toISOString(),
+                    paymentMethod: {
+                        name: 'Сбербанк',
+                        number: '1234'
+                    },
+                    messages: [
+                        {
+                            id: 1,
+                            text: 'Хочу продать 100 USDT за RUB',
+                            type: 'user',
+                            timestamp: new Date().toISOString()
+                        }
+                    ]
+                }
+            ];
+            
+            testOrders.forEach(order => orders.push(order));
+            writeData(ORDERS_FILE, orders);
+        }
+
+        res.json({
+            success: true,
+            message: 'Тестовые данные созданы',
+            testUser: {
+                username: 'test',
+                password: 'test'
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка создания тестовых данных'
+        });
+    }
+});
+
+// ==================== 404 HANDLER ====================
+
+// Обработка 404 для API
+app.use('/api', (req, res) => {
+    res.status(404).json({
+        success: false,
+        error: 'API endpoint not found'
+    });
+});
+
+app.get('/', (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>TetherBot Server</title>
+            <style>
+                body { font-family: Arial; margin: 40px; background: #f5f5f5; }
+                .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                .status { padding: 10px; border-radius: 5px; margin: 10px 0; }
+                .status.active { background: #d4edda; color: #155724; }
+                .btn { display: inline-block; padding: 10px 20px; background: #007cff; color: white; text-decoration: none; border-radius: 5px; margin: 5px; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>🤖 TetherBot Server</h1>
+                <p>Сервер работает на порту ${PORT}</p>
+                
+                <div class="status active">
+                    <strong>Status:</strong> ✅ Активен
+                </div>
+                
+                <p><a href="/api/health" class="btn">🔍 Проверить здоровье</a></p>
+                <p><a href="/api/debug/orders" class="btn">📋 Просмотреть заявки</a></p>
+                <p><a href="/api/debug/users" class="btn">👥 Просмотреть пользователей</a></p>
+                <p><a href="/api/settings" class="btn">⚙️ Настройки курсов</a></p>
+                
+                <button onclick="createTestData()" class="btn">🧪 Создать тестовые данные</button>
+                
+                <h3>🚀 Доступные endpoint'ы:</h3>
+                <ul>
+                    <li><code>POST /api/register</code> - Регистрация</li>
+                    <li><code>POST /api/login</code> - Авторизация</li>
+                    <li><code>POST /api/create-order</code> - Создание заявки</li>
+                    <li><code>GET /api/user/orders</code> - История заявок</li>
+                    <li><code>GET /api/exchange-rate</code> - Курсы обмена</li>
+                    <li><code>GET /api/chat/:orderId</code> - Чат заявки</li>
+                </ul>
+            </div>
+            
+            <script>
+                async function createTestData() {
+                    const response = await fetch('/api/create-test-data', { method: 'POST' });
+                    const data = await response.json();
+                    alert(data.message);
+                    if (data.success) {
+                        window.location.reload();
+                    }
+                }
+            </script>
+        </body>
+        </html>
+    `);
+});
 
 // ==================== ЗАПУСК СЕРВЕРА И БОТА ====================
 
