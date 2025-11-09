@@ -133,7 +133,7 @@ function Home({ navigateTo }) {
 
             console.log('🔍 Проверяем активные ордеры...');
             
-            const response = await fetch('http://localhost:5000/api/user/orders', {
+            const response = await fetch('https://tgbot-l516.onrender.com/api/user/orders', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -473,7 +473,7 @@ function Home({ navigateTo }) {
 
             console.log('🔄 Создание заявки - данные:', exchangeData);
 
-            const response = await fetch('http://localhost:5000/api/create-order', {
+            const response = await fetch('https://tgbot-l516.onrender.com/api/create-order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

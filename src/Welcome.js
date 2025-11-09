@@ -8,7 +8,7 @@ function Welcome({ navigateTo }) {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isLogin, setIsLogin] = useState(true); // true = логин, false = регистрация
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -22,16 +22,17 @@ function Welcome({ navigateTo }) {
 
         try {
             const endpoint = isLogin ? '/api/login' : '/api/register';
-            
+
             console.log('🔄 Отправка запроса на:', endpoint);
-            
-            const response = await fetch(`https://tgbot-l516.onrender.com${endpoint}`, {    
+
+            // Строка ~20:
+            const response = await fetch(`https://tgbot-l516.onrender.com${endpoint}`, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
-                    username: username.trim(), 
+                body: JSON.stringify({
+                    username: username.trim(),
                     password: password.trim(),
                     email: isLogin ? undefined : `${username.trim()}@tetherbot.com`
                 })
@@ -39,15 +40,15 @@ function Welcome({ navigateTo }) {
 
             const data = await response.json();
             console.log('📡 Ответ сервера:', data);
-            
+
             if (data.success) {
                 console.log('✅ Успешная авторизация:', data.user);
-                
+
                 // Сохраняем в localStorage
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('currentUser', JSON.stringify(data.user));
                 localStorage.setItem('isLoggedIn', 'true');
-                
+
                 navigateTo('home');
             } else {
                 setError(data.error || 'Ошибка авторизации');
@@ -72,25 +73,25 @@ function Welcome({ navigateTo }) {
                 boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
             }}>
                 <div style={{ marginBottom: '30px' }}>
-                    <h1 style={{ 
-                        color: '#333', 
+                    <h1 style={{
+                        color: '#333',
                         marginBottom: '10px',
                         fontSize: '28px',
                         fontWeight: '700'
                     }}>
                         {isLogin ? 'Вход в TetherBot' : 'Регистрация'}
                     </h1>
-                    <p style={{ 
-                        color: '#666', 
+                    <p style={{
+                        color: '#666',
                         margin: 0,
                         fontSize: '16px'
                     }}>
                         {isLogin ? 'Войдите в свой аккаунт' : 'Создайте новый аккаунт'}
                     </p>
                 </div>
-                
+
                 <form onSubmit={handleSubmit}>
-                console.log('🔄 Пытаюсь подключиться к:', `https://tgbot-l516.onrender.com${endpoint}`);
+                    console.log('🔄 Пытаюсь подключиться к:', `https://tgbot-l516.onrender.com${endpoint}`);
                     <div style={{ marginBottom: '20px', textAlign: 'left' }}>
                         <label style={{
                             display: 'block',
@@ -120,7 +121,7 @@ function Welcome({ navigateTo }) {
                             required
                         />
                     </div>
-                    
+
                     <div style={{ marginBottom: '30px', textAlign: 'left' }}>
                         <label style={{
                             display: 'block',
@@ -150,7 +151,7 @@ function Welcome({ navigateTo }) {
                             required
                         />
                     </div>
-                    
+
                     {error && (
                         <div style={{
                             color: '#ff3b30',
@@ -164,8 +165,8 @@ function Welcome({ navigateTo }) {
                             ⚠️ {error}
                         </div>
                     )}
-                    
-                    <button 
+
+                    <button
                         type="submit"
                         disabled={isLoading}
                         style={{
@@ -192,12 +193,12 @@ function Welcome({ navigateTo }) {
                         )}
                     </button>
                 </form>
-                
-                <div style={{ 
-                    borderTop: '1px solid #e1e1e1', 
-                    paddingTop: '20px' 
+
+                <div style={{
+                    borderTop: '1px solid #e1e1e1',
+                    paddingTop: '20px'
                 }}>
-                    <button 
+                    <button
                         onClick={() => {
                             setIsLogin(!isLogin);
                             setError('');
@@ -219,8 +220,8 @@ function Welcome({ navigateTo }) {
 
                 {/* Тестовые данные для быстрой проверки */}
                 {isLogin && (
-                    <div style={{ 
-                        marginTop: '20px', 
+                    <div style={{
+                        marginTop: '20px',
                         padding: '15px',
                         background: '#f8f9fa',
                         borderRadius: '10px',
