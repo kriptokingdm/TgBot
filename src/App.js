@@ -12,6 +12,7 @@ console.log('Welcome type:', typeof Welcome);
 console.log('Home type:', typeof Home);
 console.log('Profile type:', typeof Profile);
 console.log('History type:', typeof History);
+console.log('Help type:', typeof Help);
 
 function App() {
     const [currentPage, setCurrentPage] = useState('welcome');
@@ -48,8 +49,10 @@ function App() {
                 return <Profile navigateTo={navigateTo} />;
             case 'history':
                 return <History navigateTo={navigateTo} />;
-             case 'help':
+            case 'help':
                 return <Help navigateTo={navigateTo} />;
+            default:
+                return <Welcome navigateTo={handleLogin} />;
         }
     };
 
