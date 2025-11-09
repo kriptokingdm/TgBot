@@ -25,7 +25,7 @@ function Welcome({ navigateTo }) {
             
             console.log('🔄 Отправка запроса на:', endpoint);
             
-            const response = await fetch(`http://localhost:5000${endpoint}`, {
+            const response = await fetch(`https://tgbot-l516.onrender.com${endpoint}`, {    
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json'
@@ -90,6 +90,7 @@ function Welcome({ navigateTo }) {
                 </div>
                 
                 <form onSubmit={handleSubmit}>
+                console.log('🔄 Пытаюсь подключиться к:', `https://tgbot-l516.onrender.com${endpoint}`);
                     <div style={{ marginBottom: '20px', textAlign: 'left' }}>
                         <label style={{
                             display: 'block',

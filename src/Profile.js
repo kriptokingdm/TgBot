@@ -23,7 +23,7 @@ function Profile({ navigateTo }) {
             console.log('🔄 Загрузка данных пользователя...');
             
             // Загружаем основные данные пользователя
-            const userResponse = await fetch('http://localhost:5000/api/user', {
+            const userResponse = await fetch('https://tgbot-l516.onrender.com/api/user', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -37,7 +37,7 @@ function Profile({ navigateTo }) {
             const userDataResult = await userResponse.json();
             
             // Загружаем реальную статистику
-            const statsResponse = await fetch(`http://localhost:5000/api/user/stats/${currentUser.id}`, {
+            const statsResponse = await fetch(`https://tgbot-l516.onrender.com/api/user/stats/${currentUser.id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

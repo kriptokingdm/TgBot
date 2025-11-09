@@ -189,7 +189,7 @@ function Home({ navigateTo }) {
                 requestAmount = MIN_USDT;
             }
 
-            const response = await fetch(`http://localhost:5000/api/exchange-rate?amount=${requestAmount}`);
+            const response = await fetch(`https://tgbot-l516.onrender.com${endpoint}`);
             const data = await response.json();
             console.log('📊 Курсы с бекенда:', data);
 

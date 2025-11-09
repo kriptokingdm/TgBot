@@ -45,7 +45,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
     const checkChatAvailability = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5000/api/user/orders`, {
+            const response = await fetch(`https://tgbot-l516.onrender.com${endpoint}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ function SupportChat({ orderId, onClose, exchangeData }) {
     const loadChatHistory = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5000/api/chat/${orderId}`, {
+            const response = await fetch(`https://tgbot-l516.onrender.com${endpoint}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
