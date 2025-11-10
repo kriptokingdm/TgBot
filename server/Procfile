@@ -1,0 +1,2 @@
+web: node server-complete.js
+bot: node admin-server.js

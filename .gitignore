@@ -1,0 +1,7 @@
+# Создай .gitignore с содержимым:
+echo "node_modules/" > .gitignore
+echo ".env" >> .gitignore
+echo "*.log" >> .gitignore
+echo "dist/" >> .gitignore
+echo "build/" >> .gitignore
+node_modules
