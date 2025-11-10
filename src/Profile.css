@@ -1,0 +1,182 @@
+/* src/Profile.css */
+.profile-content {
+    width: var(--cards-width);
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.profile-section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.profile-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-item:last-child {
+    border-bottom: none;
+}
+
+.profile-label {
+    color: var(--hint-color);
+    font-size: 14px;
+}
+
+.profile-value {
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.profile-value.verified {
+    color: var(--buy-color);
+}
+
+/* Стили для статистики */
+.stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stats-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.stats-date {
+    font-size: 14px;
+    color: var(--hint-color);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 8px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--hint-color);
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+/* Стили для кнопки выхода */
+.logout-button {
+    width: 100%;
+    padding: 16px;
+    background: var(--error-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+}
+
+.logout-button:hover {
+    background: #d32f2f;
+    transform: translateY(-1px);
+}
+
+.logout-button:active {
+    transform: translateY(0);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .profile-content {
+        width: 95%;
+    }
+    
+    .profile-section {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    
+    .stat-item {
+        padding: 10px 6px;
+    }
+    
+    .stat-label {
+        font-size: 11px;
+    }
+    
+    .stat-value {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-section {
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+    }
+    
+    .profile-item {
+        padding: 10px 0;
+    }
+    
+    .profile-label, .profile-value {
+        font-size: 13px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .stats-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .stats-header h3 {
+        font-size: 15px;
+    }
+    
+    .logout-button {
+        padding: 14px;
+        font-size: 15px;
+        border-radius: 10px;
+    }
+}
