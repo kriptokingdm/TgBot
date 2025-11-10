@@ -1,36 +1,56 @@
 // src/App.js
 import React from 'react';
+import Welcome from './Welcome';
+import Home from './Home';
+import Profile from './Profile';
+import History from './History';
+import Help from './Help';
+import AdminPanel from './AdminPanel';
 import './App.css';
 
 function App() {
+  const [currentPage, setCurrentPage] = React.useState('welcome');
+
+  // Проверяем авторизацию при загрузке
+  React.useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const userData = localStorage.getItem('currentUser');
+    
+    if (isLoggedIn === 'true' && userData) {
+      setCurrentPage('home');
+    }
+  }, []);
+
+  // Функция для навигации
+  const navigateTo = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Рендерим текущую страницу
+  const renderCurrentPage = () => {
+    switch (currentPage) {
+      case 'welcome':
+        return <Welcome navigateTo={navigateTo} />;
+      case 'home':
+        return <Home navigateTo={navigateTo} />;
+      case 'profile':
+        return <Profile navigateTo={navigateTo} />;
+      case 'history':
+        return <History navigateTo={navigateTo} />;
+      case 'help':
+        return <Help navigateTo={navigateTo} />;
+      case 'admin':
+        return <AdminPanel navigateTo={navigateTo} />;
+      default:
+        return <Welcome navigateTo={navigateTo} />;
+    }
+  };
+
   return (
-    <div style={{
-      padding: '40px',
-      textAlign: 'center',
-      backgroundColor: '#f5f5f5',
-      minHeight: '100vh',
-      fontFamily: 'Arial, sans-serif'
-    }}>
-      <h1 style={{ color: '#333', fontSize: '32px' }}>🤖 TetherBot</h1>
-      <p style={{ color: '#666', fontSize: '18px' }}>Фронтенд работает!</p>
-      <button 
-        onClick={() => alert('React работает!')}
-        style={{
-          padding: '12px 24px',
-          background: '#007cff',
-          color: 'white',
-          border: 'none',
-          borderRadius: '8px',
-          fontSize: '16px',
-          cursor: 'pointer',
-          marginTop: '20px'
-        }}
-      >
-        Тестовая кнопка
-      </button>
+    <div className="App">
+      {renderCurrentPage()}
     </div>
   );
 }
 
 export default App;
-

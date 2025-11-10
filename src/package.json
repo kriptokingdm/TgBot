@@ -1,13 +1,12 @@
 {
-    "name": "tetherbot-frontend",
+    "name": "tetherbot-server",
     "version": "1.0.0",
     "scripts": {
-      "build": "react-scripts build",
-      "start": "react-scripts start"
-    },
+        "build": "react-scripts build",
+        "start": "node server.js"
+      },
     "dependencies": {
-      "react": "^18.2.0",
-      "react-dom": "^18.2.0",
-      "react-scripts": "5.0.1"
+      "express": "^4.18.2",
+      "node-telegram-bot-api": "^0.64.0"
     }
   }
